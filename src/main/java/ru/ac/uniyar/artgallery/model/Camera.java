@@ -5,11 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class Camera {
-    private double x;
-    private double y;
+public class Camera extends Vertex {
+
+    public Camera(double x, double y) {
+        super(x, y);
+    }
 }
