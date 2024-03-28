@@ -73,4 +73,10 @@ public class Polygon {
             }
         }
     }
+
+    public void setSuccessfulVertexForAll() {
+        for (Vertex pVertex : vertexes) {
+            pVertex.setSuccessful(false);
+        }
+    }
 }

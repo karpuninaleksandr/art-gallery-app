@@ -125,4 +125,17 @@ public class Line {
                 Math.abs(end.getX() - line.getEnd().getX()) < eps &&
                 Math.abs(end.getY() - line.getEnd().getY()) < eps;
     }
+
+    public Line extend() {
+        double k, b;
+
+        k = (end.getY() - start.getY()) / (end.getX() - start.getX());
+        b = start.getY() - k * start.getX();
+
+        Vertex newStart = new Vertex(0, b);
+        Vertex newEnd = new Vertex(1000, k * 1000 + b);
+
+        return new Line(newStart, newEnd);
+    }
+
 }

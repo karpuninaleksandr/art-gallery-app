@@ -35,9 +35,9 @@ public class MainPageView extends VerticalLayout {
     public MainPageView(@Value("${canvas.height}") int height, @Value("${canvas.width}") int width) {
         logger.info("main page initialization");
 
+        createPolygonExample();
         this.canvasHeight = height;
         this.canvasWidth = width;
-        createPolygonExample();
         init();
     }
 
@@ -102,6 +102,7 @@ public class MainPageView extends VerticalLayout {
             context.closePath();
             context.fill();
         }
+        polygon.setSuccessfulVertexForAll();
     }
 
     public boolean camTriangleCanBeDrawn(Line line, Camera camera) {
@@ -120,32 +121,45 @@ public class MainPageView extends VerticalLayout {
     }
 
     public void createComplexCamVisibilityToLine(Line line, Camera camera, CanvasRenderingContext2D context) {
+        Line lineToDraw = new Line();
+
+//        if (!(new Line(line.getStart(), camera).canBeDrawn(polygon)) && !(new Line(line.getStart(), camera).canBeDrawn(polygon))) {
+////            lineToDraw = new Line(createLineToDrawLineTo(new Line(line.getStart(), line.getMiddleVertex()), camera).getStart(),
+////                    createLineToDrawLineTo(new Line(line.getEnd(), line.getMiddleVertex()), camera).getStart());
+//        } else {
+            lineToDraw = createLineToDrawLineTo(line, camera);
+//        }
+        if (lineToDraw == null || lineToDraw.getStart() == null || lineToDraw.getEnd() == null) return;
+
+        context.lineTo(lineToDraw.getStart().getX(), lineToDraw.getStart().getY());
+        context.lineTo(lineToDraw.getEnd().getX(), lineToDraw.getEnd().getY());
+        context.lineTo(camera.getX(), camera.getY());
+    }
+
+    public Line createLineToDrawLineTo(Line line, Camera camera) {
         Vertex problemVertex = new Line(line.getStart(), camera).canBeDrawn(polygon) ? line.getEnd() : line.getStart();
         Vertex closestSuccessfulVertex = problemVertex == line.getEnd() ? line.getStart() : getClosestSuccessfulVertex(problemVertex);
 
-        Vertex neededVertex;
         Line lineThatCrosses;
 
-//        while (!neededVertex.isEqualTo(neededVertex)) {
-            try {
-                lineThatCrosses = polygon.getLines().get(new Line(camera, problemVertex).getLineThatCrosses(polygon));
-            } catch (IndexOutOfBoundsException e) {
-                return;
-            }
+        try {
+            lineThatCrosses = polygon.getLines().get(new Line(camera, problemVertex).getLineThatCrosses(polygon));
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
 
-            Vertex vertexToFormLine = closestSuccessfulVertex.getDistanceToVertex(lineThatCrosses.getStart()) >
-                    closestSuccessfulVertex.getDistanceToVertex(lineThatCrosses.getEnd()) ? lineThatCrosses.getEnd() :
-                    lineThatCrosses.getStart();
+        Vertex vertexToFormLine = closestSuccessfulVertex.getDistanceToVertex(lineThatCrosses.getStart()) >
+                closestSuccessfulVertex.getDistanceToVertex(lineThatCrosses.getEnd()) ? lineThatCrosses.getEnd() :
+                lineThatCrosses.getStart();
 
-            Vertex endForNewLine = new Vertex(vertexToFormLine.getX() * 1001, vertexToFormLine.getY() * 1001);
-            if (line.getLinesCrossVertex(new Line(new Vertex(camera.getX(), camera.getY()), vertexToFormLine)) == null) return;
-            neededVertex = line.getLinesCrossVertex(new Line(camera, vertexToFormLine));
-            context.lineTo(closestSuccessfulVertex.getX(), closestSuccessfulVertex.getY());
-            context.lineTo(neededVertex.getX(), neededVertex.getY());
-            context.lineTo(camera.getX(), camera.getY());
-//        }
+        Line lineToDrawWith = new Line(camera, vertexToFormLine);
+
+        Vertex newVertex = line.getLinesCrossVertex(lineToDrawWith.extend());
+
+        return new Line(newVertex, closestSuccessfulVertex);
     }
 
+    //todo rework
     public Vertex getClosestSuccessfulVertex(Vertex problemVertex) {
         int problemPosition = 0, minDiff = 1000;
         Vertex closestVertex = new Vertex();
