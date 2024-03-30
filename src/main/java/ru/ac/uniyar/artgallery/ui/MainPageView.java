@@ -8,12 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.concurrent.CompletableToListenableFutureAdapter;
 import org.vaadin.pekkam.Canvas;
 import org.vaadin.pekkam.CanvasRenderingContext2D;
 import ru.ac.uniyar.artgallery.model.*;
 import ru.ac.uniyar.artgallery.processing.Triangulation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -54,7 +56,10 @@ public class MainPageView extends VerticalLayout {
         Button refresh = new Button("REFRESH");
         refresh.addClickListener(it -> init());
 
-        add(refresh, canvas);
+        Button autoSolve = new Button("SOLVE");
+        autoSolve.addClickListener(it -> autoSolve());
+
+        add(refresh, autoSolve, canvas);
     }
 
     public void addWalls(CanvasRenderingContext2D context) {
@@ -78,104 +83,75 @@ public class MainPageView extends VerticalLayout {
     }
 
     public void addCamVisibilityField(Camera camera, CanvasRenderingContext2D context) {
-        ArrayList<Line> complexLines = new ArrayList<>();
-        for (Line line : polygon.getLines()) {
-            context.moveTo(camera.getX(), camera.getY());
-            context.setFillStyle("green");
-            context.beginPath();
-
-            if (camTriangleCanBeDrawn(line, camera)) {
-                createSimpleCamVisibilityToLine(line, camera, context);
-            } else {
-                complexLines.add(line);
+        ArrayList<Vertex> vertexesToDrawLinesTo = new ArrayList<>();
+        for (Vertex vertex : polygon.getVertexes()) {
+            Line lineToDraw = new Line(vertex, camera);
+            if (lineToDraw.canBeDrawn(polygon)) {
+                if (!vertexesToDrawLinesTo.contains(vertex)) {
+                    vertexesToDrawLinesTo.add(vertex);
+                    Vertex vertexPlus = getCrossingVertexOfExtendedLine(lineToDraw.extendInOneWayPlus(), vertex);
+                    if (vertexPlus != null && new Line(camera, vertexPlus).canBeDrawnExceptVertex(polygon, vertex)) {
+                        if (!vertexesToDrawLinesTo.contains(vertexPlus)) {
+                            vertexesToDrawLinesTo.add(vertexPlus);
+                        }
+                    }
+                    Vertex vertexMinus = getCrossingVertexOfExtendedLine(lineToDraw.extendInOneWayMinus(), vertex);
+                    if (vertexMinus != null && new Line(camera, vertexMinus).canBeDrawnExceptVertex(polygon, vertex)) {
+                        if (!vertexesToDrawLinesTo.contains(vertexMinus)) {
+                            vertexesToDrawLinesTo.add(vertexMinus);
+                        }
+                    }
+                }
             }
-            context.closePath();
-            context.fill();
         }
-        for (Line line : complexLines) {
-            context.moveTo(camera.getX(), camera.getY());
-            context.setFillStyle("green");
-            context.beginPath();
 
-            createComplexCamVisibilityToLine(line, camera, context);
+        context.moveTo(camera.getX(), camera.getY());
+        context.setFillStyle("green");
+        context.beginPath();
 
-            context.closePath();
-            context.fill();
+        for (Vertex vertex : getOrderedVertexes(vertexesToDrawLinesTo)) {
+            context.lineTo(vertex.getX(), vertex.getY());
         }
-        polygon.setSuccessfulVertexForAll();
-    }
 
-    public boolean camTriangleCanBeDrawn(Line line, Camera camera) {
-        Line lineToStart = new Line(camera, line.getStart());
-        Line lineToEnd = new Line(camera, line.getEnd());
-        return lineToStart.canBeDrawn(polygon) && lineToEnd.canBeDrawn(polygon);
-    }
+        context.closePath();
+        context.fill();
 
-    public void createSimpleCamVisibilityToLine(Line line, Camera camera, CanvasRenderingContext2D context) {
-        context.lineTo(line.getStart().getX(), line.getStart().getY());
-        context.lineTo(line.getEnd().getX(), line.getEnd().getY());
-        context.lineTo(camera.getX(), camera.getY());
-
-        polygon.setSuccessfulVertex(line.getStart());
-        polygon.setSuccessfulVertex(line.getEnd());
-    }
-
-    public void createComplexCamVisibilityToLine(Line line, Camera camera, CanvasRenderingContext2D context) {
-        Line lineToDraw = new Line();
-
-//        if (!(new Line(line.getStart(), camera).canBeDrawn(polygon)) && !(new Line(line.getStart(), camera).canBeDrawn(polygon))) {
-////            lineToDraw = new Line(createLineToDrawLineTo(new Line(line.getStart(), line.getMiddleVertex()), camera).getStart(),
-////                    createLineToDrawLineTo(new Line(line.getEnd(), line.getMiddleVertex()), camera).getStart());
-//        } else {
-            lineToDraw = createLineToDrawLineTo(line, camera);
+//        for (Vertex vertex : vertexesToDrawLinesTo) {
+//            context.setFillStyle("red");
+//            context.fillRect(vertex.getX(), vertex.getY(), 4, 4);
 //        }
-        if (lineToDraw == null || lineToDraw.getStart() == null || lineToDraw.getEnd() == null) return;
-
-        context.lineTo(lineToDraw.getStart().getX(), lineToDraw.getStart().getY());
-        context.lineTo(lineToDraw.getEnd().getX(), lineToDraw.getEnd().getY());
-        context.lineTo(camera.getX(), camera.getY());
+//
+//        for (Vertex vertex : getOrderedVertexes(vertexesToDrawLinesTo)) {
+//            context.setFillStyle("yellow");
+//            context.fillRect(vertex.getX(), vertex.getY(), 2, 2);
+//        }
     }
 
-    public Line createLineToDrawLineTo(Line line, Camera camera) {
-        Vertex problemVertex = new Line(line.getStart(), camera).canBeDrawn(polygon) ? line.getEnd() : line.getStart();
-        Vertex closestSuccessfulVertex = problemVertex == line.getEnd() ? line.getStart() : getClosestSuccessfulVertex(problemVertex);
-
-        Line lineThatCrosses;
-
-        try {
-            lineThatCrosses = polygon.getLines().get(new Line(camera, problemVertex).getLineThatCrosses(polygon));
-        } catch (IndexOutOfBoundsException e) {
-            return null;
+    public Vertex getCrossingVertexOfExtendedLine(Line line, Vertex vertex) {
+        for (Line linePolygon : polygon.getLines()) {
+            if (linePolygon.crossesExceptVertex(line, vertex)) {
+                return line.getLinesCrossVertex(linePolygon);
+            }
         }
-
-        Vertex vertexToFormLine = closestSuccessfulVertex.getDistanceToVertex(lineThatCrosses.getStart()) >
-                closestSuccessfulVertex.getDistanceToVertex(lineThatCrosses.getEnd()) ? lineThatCrosses.getEnd() :
-                lineThatCrosses.getStart();
-
-        Line lineToDrawWith = new Line(camera, vertexToFormLine);
-
-        Vertex newVertex = line.getLinesCrossVertex(lineToDrawWith.extend());
-
-        return new Line(newVertex, closestSuccessfulVertex);
+        return null;
     }
 
-    //todo rework
-    public Vertex getClosestSuccessfulVertex(Vertex problemVertex) {
-        int problemPosition = 0, minDiff = 1000;
-        Vertex closestVertex = new Vertex();
-        for (int i = 1; i < polygon.getVertexes().size(); ++i) {
-            if (polygon.getVertexes().get(i) == problemVertex) {
-                problemPosition = i;
-                break;
+    public ArrayList<Vertex> getOrderedVertexes(ArrayList<Vertex> vertexesWithNoOrder) {
+        ArrayList<Vertex> orderedVertexes = new ArrayList<>();
+        for (Line line : polygon.getLines()) {
+            ArrayList<Vertex> vertexesOnTheLine = new ArrayList<>();
+            for (Vertex vertex : vertexesWithNoOrder) {
+                if (orderedVertexes.contains(vertex)) {
+                    continue;
+                }
+                if (line.checkIfContainsVertex(vertex)) {
+                    vertexesOnTheLine.add(vertex);
+                }
             }
+            orderedVertexes.addAll(vertexesOnTheLine.stream().sorted((v1, v2) ->
+                    (int)(v1.getDistanceToVertex(line.getStart()) - v2.getDistanceToVertex(line.getStart()))).toList());
         }
-        for (int i = 0; i < polygon.getVertexes().size(); ++i) {
-            if (polygon.getVertexes().get(i).isSuccessful() && Math.abs(problemPosition - i) < minDiff) {
-                minDiff = Math.abs(problemPosition - i);
-                closestVertex = polygon.getVertexes().get(i);
-            }
-        }
-        return closestVertex;
+        return orderedVertexes;
     }
 
     public void drawCameras(CanvasRenderingContext2D context) {
@@ -203,5 +179,19 @@ public class MainPageView extends VerticalLayout {
         polygon.mapToOtherFormats();
 
         Triangulation.invoke(polygon);
+    }
+
+    //todo add solving
+    public void autoSolve() {
+        CanvasRenderingContext2D context = canvas.getContext();
+        context.setStrokeStyle("black");
+        for (Triangle triangle : polygon.getTriangles()) {
+            for (Line line : triangle.getListOfLines()) {
+                context.setStrokeStyle("black");
+                context.moveTo(line.getStart().getX(), line.getStart().getY());
+                context.lineTo(line.getEnd().getX(), line.getEnd().getY());
+                context.stroke();
+            }
+        }
     }
 }

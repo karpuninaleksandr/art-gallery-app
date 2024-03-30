@@ -22,7 +22,7 @@ public class Vertex {
     }
 
     public double getDistanceToVertex(Vertex vertex) {
-        return Math.sqrt(Math.pow(x + vertex.getX(), 2) + Math.pow(y + vertex.getY(), 2));
+        return Math.sqrt(Math.pow(x - vertex.getX(), 2) + Math.pow(y - vertex.getY(), 2));
     }
 
     public boolean isEqualTo(Vertex vertex) {

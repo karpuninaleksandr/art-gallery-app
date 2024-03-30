@@ -20,6 +20,11 @@ public class Line {
         return crossVertex != null && !start.isEqualTo(crossVertex) && !end.isEqualTo(crossVertex);
     }
 
+    public boolean crossesExceptVertex(Line line, Vertex vertex) {
+        Vertex crossVertex = getLinesCrossVertex(line);
+        return crossVertex != null && !start.isEqualTo(crossVertex) && !end.isEqualTo(crossVertex) && !vertex.isEqualTo(crossVertex);
+    }
+
     public Vertex getLinesCrossVertex(Line line) {
         double k1, b1, k2, b2, xCross, yCross;
 
@@ -27,10 +32,8 @@ public class Line {
             if (line.getStart().getX() == line.getEnd().getX()) {
                 if (start.getX() != line.getStart().getX())
                     return null;
-                if (start.getY() >= Math.min(line.getStart().getY(), line.getEnd().getY())
-                        && start.getY() <= Math.max(line.getStart().getY(), line.getEnd().getY()) ||
-                        end.getY() >= Math.min(line.getStart().getY(), line.getEnd().getY()) && end.getY()
-                                <= Math.max(line.getStart().getY(), line.getEnd().getY())) {
+                if (checkIfVertexIsOnTheLine(line.getStart(), line.getEnd(), start) ||
+                        checkIfVertexIsOnTheLine(line.getStart(), line.getEnd(), end)) {
                     return end;
                 } else {
                     return null;
@@ -40,11 +43,9 @@ public class Line {
             b2 = line.getStart().getY() - k2 * line.getStart().getX();
             xCross = start.getX();
             yCross = k2 * start.getX() + b2;
-            //todo this if needs to be fixed
-            if ((yCross >= Math.min(start.getY(), end.getY()) && yCross <= Math.max(start.getY(), end.getY()))
-                    &&
-                (xCross >= Math.min(line.getStart().getX(), line.getEnd().getX()) && xCross <= Math.max(line.getStart().getX(), line.getEnd().getX()))
-            ) {
+            Vertex checkVertex = new Vertex(xCross, yCross);
+            if (checkIfVertexIsOnTheLine(start, end, checkVertex) &&
+                    checkIfVertexIsOnTheLine(line.getStart(), line.getEnd(), checkVertex)) {
                 return new Vertex(xCross, yCross);
             }
             return null;
@@ -55,8 +56,8 @@ public class Line {
             b1 = start.getY() - k1 * start.getX();
             xCross = line.getStart().getX();
             yCross = k1 * line.getStart().getX() + b1;
-            if (yCross >= Math.min(start.getY(), end.getY()) && yCross <= Math.max(start.getY(), end.getY()) && xCross >=
-                    Math.min(start.getX(), end.getX()) && xCross <= Math.max(start.getX(), end.getX())) {
+            Vertex checkVertex = new Vertex(xCross, yCross);
+            if (checkIfVertexIsOnTheLine(start, end, checkVertex) && checkIfVertexIsOnTheLine(line.getStart(), line.getEnd(), checkVertex)) {
                 return new Vertex(xCross, yCross);
             }
             return null;
@@ -70,10 +71,8 @@ public class Line {
 
         if (k1 == k2) {
             if (b1 == b2) {
-                if ((start.getX() <= Math.max(line.getStart().getX(), line.getEnd().getX()) && start.getX() >=
-                        Math.min(line.getStart().getX(), line.getEnd().getX())) ||
-                        (end.getX() <= Math.max(line.getStart().getX(), line.getEnd().getX()) && start.getX() >=
-                        Math.min(line.getStart().getX(), line.getEnd().getX()))) {
+                if (checkIfVertexIsOnTheLine(line.getStart(), line.getEnd(), start) ||
+                        checkIfVertexIsOnTheLine(line.getStart(), line.getEnd(), end)) {
                     return end;
                 }
                 return null;
@@ -83,20 +82,11 @@ public class Line {
 
         xCross = (b2 - b1) / (k1 - k2);
         yCross = k1 * xCross + b1;
+        Vertex checkVertex = new Vertex(xCross, yCross);
 
-        if (xCross >= Math.min(start.getX(), end.getX()) && xCross <= Math.max(start.getX(), end.getX()) &&
-                yCross >= Math.min(start.getY(), end.getY()) && yCross <= Math.max(start.getY(), end.getY()))
-            if (xCross >= Math.min(line.getStart().getX(), line.getEnd().getX()) && xCross <=
-                    Math.max(line.getStart().getX(), line.getEnd().getX()) && yCross >=
-                    Math.min(line.getStart().getY(), line.getEnd().getY()) && yCross <=
-                    Math.max(line.getStart().getY(), line.getEnd().getY())) {
-                return new Vertex(xCross, yCross);
-            }
+        if (checkIfVertexIsOnTheLine(start, end, checkVertex) && checkIfVertexIsOnTheLine(line.getStart(), line.getEnd(), checkVertex))
+            return new Vertex(xCross, yCross);
         return null;
-    }
-
-    public Vertex getMiddleVertex() {
-        return new Vertex((start.getX() + end.getX()) / 2, (start.getY() + end.getY()) / 2);
     }
 
     public double getLength() {
@@ -105,37 +95,49 @@ public class Line {
 
     public boolean canBeDrawn(Polygon polygon) {
         for (Line line : polygon.getLines()) {
-            if (line.crosses(this))
+            if (this.crosses(line))
                 return false;
         }
         return true;
     }
 
-    public int getLineThatCrosses(Polygon polygon) {
-        for (int i = 0; i < polygon.getLines().size(); ++i) {
-            if (polygon.getLines().get(i).crosses(this))
-                return i;
+    public boolean canBeDrawnExceptVertex(Polygon polygon, Vertex vertex) {
+        for (Line line : polygon.getLines()) {
+            if (this.crossesExceptVertex(line, vertex))
+                return false;
         }
-        return -1;
+        return true;
     }
 
-    public boolean isEqualTo(Line line) {
-        return Math.abs(start.getX() - line.getStart().getX()) < eps &&
-                Math.abs(start.getY() - line.getStart().getY()) < eps &&
-                Math.abs(end.getX() - line.getEnd().getX()) < eps &&
-                Math.abs(end.getY() - line.getEnd().getY()) < eps;
+    public Line extendInOneWayPlus() {
+        double k, b;
+
+        k = (end.getY() - start.getY()) / (end.getX() - start.getX());
+        b = start.getY() - k * start.getX();
+
+        Vertex newEnd = new Vertex(1000, k * 1000 + b);
+
+        return new Line(start, newEnd);
     }
 
-    public Line extend() {
+    public Line extendInOneWayMinus() {
         double k, b;
 
         k = (end.getY() - start.getY()) / (end.getX() - start.getX());
         b = start.getY() - k * start.getX();
 
         Vertex newStart = new Vertex(0, b);
-        Vertex newEnd = new Vertex(1000, k * 1000 + b);
 
-        return new Line(newStart, newEnd);
+        return new Line(newStart, end);
+    }
+
+    public boolean checkIfVertexIsOnTheLine(Vertex startCheck, Vertex endCheck, Vertex check) {
+        return check.getY() >= Math.min(startCheck.getY(), endCheck.getY()) && check.getY() <= Math.max(startCheck.getY(), endCheck.getY()) && check.getX() >=
+                Math.min(startCheck.getX(), endCheck.getX()) && check.getX() <= Math.max(startCheck.getX(), endCheck.getX());
+    }
+
+    public boolean checkIfContainsVertex(Vertex check) {
+        return checkIfVertexIsOnTheLine(start, end, check);
     }
 
 }
