@@ -10,19 +10,17 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Line {
-    private final double eps = 0.00000001;
-
     private Vertex start;
     private Vertex end;
 
     public boolean crosses(Line line) {
         Vertex crossVertex = getLinesCrossVertex(line);
-        return crossVertex != null && !start.isEqualTo(crossVertex) && !end.isEqualTo(crossVertex);
+        return crossVertex != null && start.isNotEqualTo(crossVertex) && end.isNotEqualTo(crossVertex);
     }
 
     public boolean crossesExceptVertex(Line line, Vertex vertex) {
         Vertex crossVertex = getLinesCrossVertex(line);
-        return crossVertex != null && !start.isEqualTo(crossVertex) && !end.isEqualTo(crossVertex) && !vertex.isEqualTo(crossVertex);
+        return crossVertex != null && start.isNotEqualTo(crossVertex) && end.isNotEqualTo(crossVertex) && vertex.isNotEqualTo(crossVertex);
     }
 
     public Vertex getLinesCrossVertex(Line line) {

@@ -13,15 +13,11 @@ public class Polygon {
 
     private final ArrayList<Vertex> vertexes = new ArrayList<>();
 
-    private final ArrayList<Camera> cameras = new ArrayList<>();
+    private ArrayList<Camera> cameras = new ArrayList<>();
 
     private final ArrayList<Line> lines = new ArrayList<>();
 
     private final ArrayList<Triangle> triangles = new ArrayList<>();
-
-    public void addVertex(Vertex vertex) {
-        vertexes.add(vertex);
-    }
 
     public void addVertexes(Collection<Vertex> vertexes) {
         this.vertexes.addAll(vertexes);
@@ -35,17 +31,6 @@ public class Polygon {
         for (int i = 0; i < vertexes.size() - 1;)
             lines.add(new Line(vertexes.get(i), vertexes.get(++i)));
         lines.add(new Line(vertexes.get(vertexes.size() - 1), vertexes.get(0)));
-
-//        for (int i = 0; i < lines.size() - 3; ++i) {
-//            triangles.add(new Triangle(lines.get(i).getStart(), lines.get(i + 1).getStart(),
-//                    lines.get(i + 2).getStart()));
-//        }
-//        if (lines.size() != 3) {
-//            triangles.add(new Triangle(lines.get(lines.size() - 3).getStart(), lines.get(lines.size() - 2).getStart(),
-//                    lines.get(lines.size() - 1).getStart()));
-//        }
-//        triangles.add(new Triangle(lines.get(lines.size() - 2).getStart(), lines.get(lines.size() - 1).getStart(),
-//                lines.get(0).getStart()));
     }
 
     public void addCamera(Camera camera) {
@@ -65,18 +50,7 @@ public class Polygon {
         return false;
     }
 
-    public void setSuccessfulVertex(Vertex vertex) {
-        for (Vertex pVertex : vertexes) {
-            if (pVertex.isEqualTo(vertex)) {
-                pVertex.setSuccessful(true);
-                break;
-            }
-        }
-    }
-
-    public void setSuccessfulVertexForAll() {
-        for (Vertex pVertex : vertexes) {
-            pVertex.setSuccessful(false);
-        }
+    public void clearCams() {
+        this.cameras = new ArrayList<>();
     }
 }

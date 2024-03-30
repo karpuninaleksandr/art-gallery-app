@@ -44,4 +44,29 @@ public class Triangle {
 
         return lines;
     }
+
+    public boolean isNextTo(Triangle triangle) {
+        return this.contains(triangle.getVertex1(), triangle.getVertex2()) ||
+                this.contains(triangle.getVertex1(), triangle.getVertex3()) ||
+                this.contains(triangle.getVertex2(), triangle.getVertex3());
+    }
+
+    public boolean contains(Vertex vertex1, Vertex vertex2) {
+        return checkIfTwoOfThreeVertexesAreEqual(this.vertex1, this.vertex2, this.vertex3, vertex1, vertex2) ||
+                checkIfTwoOfThreeVertexesAreEqual(this.vertex1, this.vertex3, this.vertex2, vertex1, vertex2) ||
+                checkIfTwoOfThreeVertexesAreEqual(this.vertex2, this.vertex1, this.vertex3, vertex1, vertex2) ||
+                checkIfTwoOfThreeVertexesAreEqual(this.vertex2, this.vertex3, this.vertex1, vertex1, vertex2) ||
+                checkIfTwoOfThreeVertexesAreEqual(this.vertex3, this.vertex1, this.vertex2, vertex1, vertex2) ||
+                checkIfTwoOfThreeVertexesAreEqual(this.vertex3, this.vertex2, this.vertex1, vertex1, vertex2);
+    }
+
+    public boolean checkIfTwoOfThreeVertexesAreEqual(Vertex v1, Vertex v2, Vertex v3, Vertex c1, Vertex c2) {
+        if (v1.isEqualTo(c1) || v1.isEqualTo(c2)) {
+            if (v2.isEqualTo(c1) || v2.isEqualTo(c2)) {
+                return true;
+            } else return v3.isEqualTo(c1) || v3.isEqualTo(c2);
+        }
+        return false;
+    }
+
 }
