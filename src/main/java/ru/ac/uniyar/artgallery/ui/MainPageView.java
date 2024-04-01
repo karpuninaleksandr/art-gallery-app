@@ -109,22 +109,15 @@ public class MainPageView extends VerticalLayout {
         context.setFillStyle("green");
         context.beginPath();
 
-        for (Vertex vertex : getOrderedVertexes(vertexesToDrawLinesTo)) {
+        ArrayList<Vertex> resultVertexes = getOrderedVertexes(vertexesToDrawLinesTo);
+
+        for (Vertex vertex : resultVertexes) {
             context.lineTo(vertex.getX(), vertex.getY());
         }
+        context.lineTo(resultVertexes.get(0).getX(), resultVertexes.get(0).getY());
 
         context.closePath();
         context.fill();
-
-//        for (Vertex vertex : vertexesToDrawLinesTo) {
-//            context.setFillStyle("red");
-//            context.fillRect(vertex.getX(), vertex.getY(), 4, 4);
-//        }
-//
-//        for (Vertex vertex : getOrderedVertexes(vertexesToDrawLinesTo)) {
-//            context.setFillStyle("yellow");
-//            context.fillRect(vertex.getX(), vertex.getY(), 2, 2);
-//        }
     }
 
     public Vertex getCrossingVertexOfExtendedLine(Line line, Vertex vertex) {
@@ -181,7 +174,6 @@ public class MainPageView extends VerticalLayout {
         Triangulation.invoke(polygon);
     }
 
-    //todo add solving
     public void autoSolve() {
         CanvasRenderingContext2D context = canvas.getContext();
         context.setStrokeStyle("black");
@@ -238,10 +230,6 @@ public class MainPageView extends VerticalLayout {
             if (!done.contains(check)) {
                 done.add(check);
             }
-
-//            skipped.add(check.getVertex1());
-//            skipped.add(check.getVertex2());
-//            skipped.add(check.getVertex3());
             check = getNextTriangleToCheck(check, trianglesToCheck, done);
 
             if (check == null && index > 0) {
@@ -256,7 +244,7 @@ public class MainPageView extends VerticalLayout {
             logger.info("moving forward to index: " + index);
         }
 
-        //todo раскомментить для отображения триангуляции
+        //раскомментить для отображения триангуляции
 //        for (Triangle triangle : polygon.getTriangles()) {
 //            for (Line line : triangle.getListOfLines()) {
 //                context.setStrokeStyle("black");
