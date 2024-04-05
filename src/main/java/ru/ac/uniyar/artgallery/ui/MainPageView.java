@@ -208,7 +208,7 @@ public class MainPageView extends VerticalLayout {
                 skipped.add(check.getVertex1());
                 skipped.add(check.getVertex2());
             } else {
-                Vertex tobeRed = new Vertex();
+                Vertex tobeRed;
                 if (!skipped.contains(check.getVertex1()))
                     tobeRed = check.getVertex1();
                 else if (!skipped.contains(check.getVertex2()))
