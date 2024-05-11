@@ -11,7 +11,6 @@ import java.util.List;
 
 //todo add clear function
 public class PolygonGeneration {
-    private static final List<Vertex> vertexes = new ArrayList<>();
     private static final List<Line> segments = new ArrayList<>();
 
     private static int width;
@@ -23,11 +22,12 @@ public class PolygonGeneration {
 
         generateTriangle();
 
-        for (int i = 0; i < numberOfVertexes - 3; ++i) {
+        for (int i = 0; i < numberOfVertexes - 3; ++i)
             addPoint();
-        }
 
-        return new Polygon();
+        sortSegments();
+
+        return createPolygonFromSegments();
     }
 
     private static void generateTriangle() {
@@ -36,7 +36,6 @@ public class PolygonGeneration {
         Vertex c = new Vertex(Math.random() * width, Math.random() * height);
 
         if ((new Triangle(a, b, c)).isValid()) {
-            vertexes.addAll(Arrays.asList(a, b, c));
             segments.addAll(Arrays.asList(new Line(a, b), new Line(a, c), new Line(b, c)));
         } else generateTriangle();
     }
@@ -47,5 +46,20 @@ public class PolygonGeneration {
         Vertex v2 = segments.get(segmentToRemove).getEnd();
         segments.remove(segmentToRemove);
 
+        //todo create visibility field for v1 and v2 vertexes, randomly get 1 point from it and add it to polygon
+    }
+
+    private static void sortSegments() {
+        //todo sort segments somehow
+    }
+
+    private static Polygon createPolygonFromSegments() {
+        List<Vertex> vertexesToFromPolygon = new ArrayList<>();
+        for (Line line : segments)
+            vertexesToFromPolygon.add(line.getStart());
+
+        Polygon polygon = new Polygon();
+        polygon.addVertexes(vertexesToFromPolygon);
+        return polygon;
     }
 }

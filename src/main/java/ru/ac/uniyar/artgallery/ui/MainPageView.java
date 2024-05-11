@@ -16,7 +16,6 @@ import ru.ac.uniyar.artgallery.processing.CameraAdding;
 import ru.ac.uniyar.artgallery.processing.PolygonGeneration;
 import ru.ac.uniyar.artgallery.processing.Triangulation;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
