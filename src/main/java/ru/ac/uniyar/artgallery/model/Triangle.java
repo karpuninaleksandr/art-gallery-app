@@ -69,4 +69,7 @@ public class Triangle {
         return false;
     }
 
+    public boolean isValid() {
+        return !(new Line(vertex1, vertex3)).checkIfContainsVertex(vertex3);
+    }
 }
