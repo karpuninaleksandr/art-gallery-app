@@ -22,8 +22,8 @@ public class PolygonGeneration {
 
         generateTriangle();
 
-        for (int i = 0; i < numberOfVertexes - 3; ++i)
-            addPoint();
+//        for (int i = 0; i < numberOfVertexes - 3; ++i)
+//            addPoint();
 
         sortSegments();
 
@@ -36,12 +36,12 @@ public class PolygonGeneration {
         Vertex c = new Vertex(Math.random() * width, Math.random() * height);
 
         if ((new Triangle(a, b, c)).isValid()) {
-            segments.addAll(Arrays.asList(new Line(a, b), new Line(a, c), new Line(b, c)));
+            segments.addAll(Arrays.asList(new Line(a, b), new Line(b, c), new Line(c, a)));
         } else generateTriangle();
     }
 
     private static void addPoint() {
-        int segmentToRemove = Math.round((float) Math.random() * segments.size());
+        int segmentToRemove = Math.round((float) Math.random() * (segments.size() - 1));
         Vertex v1 = segments.get(segmentToRemove).getStart();
         Vertex v2 = segments.get(segmentToRemove).getEnd();
         segments.remove(segmentToRemove);
@@ -57,6 +57,8 @@ public class PolygonGeneration {
         List<Vertex> vertexesToFromPolygon = new ArrayList<>();
         for (Line line : segments)
             vertexesToFromPolygon.add(line.getStart());
+
+        segments.clear();
 
         Polygon polygon = new Polygon();
         polygon.addVertexes(vertexesToFromPolygon);

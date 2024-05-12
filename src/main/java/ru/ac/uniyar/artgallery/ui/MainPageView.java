@@ -37,7 +37,6 @@ public class MainPageView extends VerticalLayout {
     public MainPageView(@Value("${canvas.height}") int height, @Value("${canvas.width}") int width) {
         logger.info("main page initialization");
 
-        polygon = PolygonGeneration.invoke(10, height, width);
 //        createPolygonExample();
 
         this.canvasHeight = height;
@@ -49,13 +48,13 @@ public class MainPageView extends VerticalLayout {
     public void init() {
         removeAll();
         canvas = new Canvas(canvasWidth, canvasHeight);
+
         canvas.addMouseClickListener(it -> {
             logger.info("clicked on " + it.getOffsetX() + " " + it.getOffsetY());
             CameraAdding.addCam(it.getOffsetX(), it.getOffsetY(), polygon, canvas);
         });
 
-        polygon.clearCams();
-
+        createPolygon();
         addWalls(canvas.getContext());
 
         Button refresh = new Button("REFRESH");
@@ -75,6 +74,14 @@ public class MainPageView extends VerticalLayout {
             context.lineTo(line.getEnd().getX(), line.getEnd().getY());
             context.stroke();
         }
+    }
+
+    public void createPolygon() {
+        polygon = PolygonGeneration.invoke(4, canvasHeight, canvasWidth);
+        polygon.mapToOtherFormats();
+        polygon.clearCams();
+
+        Triangulation.invoke(polygon);
     }
 
     public void createPolygonExample() {

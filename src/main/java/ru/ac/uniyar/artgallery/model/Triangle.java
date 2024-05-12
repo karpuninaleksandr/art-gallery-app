@@ -70,6 +70,6 @@ public class Triangle {
     }
 
     public boolean isValid() {
-        return !(new Line(vertex1, vertex3)).checkIfContainsVertex(vertex3);
+        return !(new Line(vertex1, vertex3)).checkIfContainsVertex(vertex2);
     }
 }
