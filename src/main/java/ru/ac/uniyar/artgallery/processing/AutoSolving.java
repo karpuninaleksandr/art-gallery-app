@@ -1,6 +1,7 @@
 package ru.ac.uniyar.artgallery.processing;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.vaadin.pekkam.Canvas;
 import org.vaadin.pekkam.CanvasRenderingContext2D;
 import ru.ac.uniyar.artgallery.model.Polygon;
@@ -11,7 +12,9 @@ import java.util.ArrayList;
 
 public class AutoSolving {
 
-    public static void invoke(Canvas canvas, Polygon polygon, Logger logger) {
+    private static final Logger logger = LoggerFactory.getLogger(AutoSolving.class);
+
+    public static void invoke(Canvas canvas, Polygon polygon) {
         CanvasRenderingContext2D context = canvas.getContext();
         context.setStrokeStyle("black");
 

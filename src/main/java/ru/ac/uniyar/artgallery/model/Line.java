@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -91,16 +93,16 @@ public class Line {
         return Math.sqrt(Math.pow(start.getX() - end.getX(), 2) + Math.pow((start.getY() - end.getY()), 2));
     }
 
-    public boolean canBeDrawn(Polygon polygon) {
-        for (Line line : polygon.getLines()) {
+    public boolean canBeDrawn(List<Line> lines) {
+        for (Line line : lines) {
             if (this.crosses(line))
                 return false;
         }
         return true;
     }
 
-    public boolean canBeDrawnExceptVertex(Polygon polygon, Vertex vertex) {
-        for (Line line : polygon.getLines()) {
+    public boolean canBeDrawnExceptVertex(List<Line> lines, Vertex vertex) {
+        for (Line line : lines) {
             if (this.crossesExceptVertex(line, vertex))
                 return false;
         }

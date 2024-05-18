@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -23,14 +24,22 @@ public class Polygon {
         this.vertexes.addAll(vertexes);
     }
 
-    public void addTriangle(Triangle triangle) {
-        this.triangles.add(triangle);
+    public void addLines(Collection<Line> lines) {
+        this.lines.addAll(lines);
+        List<Vertex> vertexesToAdd = new ArrayList<>();
+        for (Line line : lines) {
+            if (!vertexesToAdd.contains(line.getStart())) {
+                vertexesToAdd.add(line.getStart());
+            }
+            if (!vertexesToAdd.contains(line.getEnd())) {
+                vertexesToAdd.add(line.getEnd());
+            }
+        }
+        this.addVertexes(vertexesToAdd);
     }
 
-    public void mapToOtherFormats() {
-        for (int i = 0; i < vertexes.size() - 1;)
-            lines.add(new Line(vertexes.get(i), vertexes.get(++i)));
-        lines.add(new Line(vertexes.get(vertexes.size() - 1), vertexes.get(0)));
+    public void addTriangle(Triangle triangle) {
+        this.triangles.add(triangle);
     }
 
     public void addCamera(Camera camera) {

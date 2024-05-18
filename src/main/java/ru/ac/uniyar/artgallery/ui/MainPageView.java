@@ -16,8 +16,6 @@ import ru.ac.uniyar.artgallery.processing.CameraAdding;
 import ru.ac.uniyar.artgallery.processing.PolygonGeneration;
 import ru.ac.uniyar.artgallery.processing.Triangulation;
 
-import java.util.List;
-
 @Service
 @PreserveOnRefresh
 @Route("")
@@ -36,8 +34,6 @@ public class MainPageView extends VerticalLayout {
 
     public MainPageView(@Value("${canvas.height}") int height, @Value("${canvas.width}") int width) {
         logger.info("main page initialization");
-
-//        createPolygonExample();
 
         this.canvasHeight = height;
         this.canvasWidth = width;
@@ -61,7 +57,7 @@ public class MainPageView extends VerticalLayout {
         refresh.addClickListener(it -> init());
 
         Button autoSolve = new Button("SOLVE");
-        autoSolve.addClickListener(it -> AutoSolving.invoke(canvas, polygon, logger));
+        autoSolve.addClickListener(it -> AutoSolving.invoke(canvas, polygon));
 
         add(refresh, autoSolve, canvas);
     }
@@ -77,32 +73,24 @@ public class MainPageView extends VerticalLayout {
     }
 
     public void createPolygon() {
-        polygon = PolygonGeneration.invoke(4, canvasHeight, canvasWidth);
-        polygon.mapToOtherFormats();
-        polygon.clearCams();
-
-        Triangulation.invoke(polygon);
-    }
-
-    public void createPolygonExample() {
         logger.info("creating polygon");
 
-        polygon = new Polygon();
+//        polygon.addVertexes(List.of(
+//                new Vertex(100, 500),
+//                new Vertex(100, 800),
+//                new Vertex(700, 800),
+//                new Vertex(700, 600),
+//                new Vertex(500, 600),
+//                new Vertex(500, 300),
+//                new Vertex(300, 300),
+//                new Vertex(300, 100),
+//                new Vertex(200, 100),
+//                new Vertex(200, 500)
+//        ));
 
-        polygon.addVertexes(List.of(
-                new Vertex(100, 500),
-                new Vertex(100, 800),
-                new Vertex(700, 800),
-                new Vertex(700, 600),
-                new Vertex(500, 600),
-                new Vertex(500, 300),
-                new Vertex(300, 300),
-                new Vertex(300, 100),
-                new Vertex(200, 100),
-                new Vertex(200, 500)
-        ));
-        polygon.mapToOtherFormats();
+        polygon = PolygonGeneration.invoke(500, canvasHeight, canvasWidth, canvas.getContext());
+        polygon.clearCams();
 
-        Triangulation.invoke(polygon);
+//        Triangulation.invoke(polygon);
     }
 }

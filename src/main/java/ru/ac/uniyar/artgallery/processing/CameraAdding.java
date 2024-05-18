@@ -1,5 +1,7 @@
 package ru.ac.uniyar.artgallery.processing;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.vaadin.pekkam.Canvas;
 import org.vaadin.pekkam.CanvasRenderingContext2D;
 import ru.ac.uniyar.artgallery.model.Camera;
@@ -7,9 +9,11 @@ import ru.ac.uniyar.artgallery.model.Line;
 import ru.ac.uniyar.artgallery.model.Polygon;
 import ru.ac.uniyar.artgallery.model.Vertex;
 
-import java.util.ArrayList;
+import java.util.*;
 
 public class CameraAdding {
+
+    private static final Logger logger = LoggerFactory.getLogger(CameraAdding.class);
 
     public static void addCam(double x, double y, Polygon polygon, Canvas canvas) {
         Camera camera = new Camera(x, y);
@@ -25,17 +29,17 @@ public class CameraAdding {
         ArrayList<Vertex> vertexesToDrawLinesTo = new ArrayList<>();
         for (Vertex vertex : polygon.getVertexes()) {
             Line lineToDraw = new Line(vertex, camera);
-            if (lineToDraw.canBeDrawn(polygon)) {
+            if (lineToDraw.canBeDrawn(polygon.getLines())) {
                 if (!vertexesToDrawLinesTo.contains(vertex)) {
                     vertexesToDrawLinesTo.add(vertex);
-                    Vertex vertexPlus = getCrossingVertexOfExtendedLine(lineToDraw.extendInOneWayPlus(), vertex, polygon);
-                    if (vertexPlus != null && new Line(camera, vertexPlus).canBeDrawnExceptVertex(polygon, vertex)) {
+                    Vertex vertexPlus = getCrossingVertexOfExtendedLine(lineToDraw.extendInOneWayPlus(), vertex, polygon.getLines());
+                    if (vertexPlus != null && new Line(camera, vertexPlus).canBeDrawnExceptVertex(polygon.getLines(), vertex)) {
                         if (!vertexesToDrawLinesTo.contains(vertexPlus)) {
                             vertexesToDrawLinesTo.add(vertexPlus);
                         }
                     }
-                    Vertex vertexMinus = getCrossingVertexOfExtendedLine(lineToDraw.extendInOneWayMinus(), vertex, polygon);
-                    if (vertexMinus != null && new Line(camera, vertexMinus).canBeDrawnExceptVertex(polygon, vertex)) {
+                    Vertex vertexMinus = getCrossingVertexOfExtendedLine(lineToDraw.extendInOneWayMinus(), vertex, polygon.getLines());
+                    if (vertexMinus != null && new Line(camera, vertexMinus).canBeDrawnExceptVertex(polygon.getLines(), vertex)) {
                         if (!vertexesToDrawLinesTo.contains(vertexMinus)) {
                             vertexesToDrawLinesTo.add(vertexMinus);
                         }
@@ -48,7 +52,7 @@ public class CameraAdding {
         context.setFillStyle("green");
         context.beginPath();
 
-        ArrayList<Vertex> resultVertexes = getOrderedVertexes(vertexesToDrawLinesTo, polygon);
+        ArrayList<Vertex> resultVertexes = getOrderedVertexes(vertexesToDrawLinesTo, polygon.getLines());
 
         for (Vertex vertex : resultVertexes) {
             context.lineTo(vertex.getX(), vertex.getY());
@@ -65,8 +69,8 @@ public class CameraAdding {
 //        }
     }
 
-    public static Vertex getCrossingVertexOfExtendedLine(Line line, Vertex vertex, Polygon polygon) {
-        for (Line linePolygon : polygon.getLines()) {
+    public static Vertex getCrossingVertexOfExtendedLine(Line line, Vertex vertex, List<Line> lines) {
+        for (Line linePolygon : lines) {
             if (linePolygon.crossesExceptVertex(line, vertex)) {
                 return line.getLinesCrossVertex(linePolygon);
             }
@@ -74,9 +78,9 @@ public class CameraAdding {
         return null;
     }
 
-    public static ArrayList<Vertex> getOrderedVertexes(ArrayList<Vertex> vertexesWithNoOrder, Polygon polygon) {
+    public static ArrayList<Vertex> getOrderedVertexes(ArrayList<Vertex> vertexesWithNoOrder, List<Line> lines) {
         ArrayList<Vertex> orderedVertexes = new ArrayList<>();
-        for (Line line : polygon.getLines()) {
+        for (Line line : lines) {
             ArrayList<Vertex> vertexesOnTheLine = new ArrayList<>();
             for (Vertex vertex : vertexesWithNoOrder) {
                 if (orderedVertexes.contains(vertex)) {
@@ -91,6 +95,7 @@ public class CameraAdding {
         }
         return orderedVertexes;
     }
+
 
     public static void drawCameras(CanvasRenderingContext2D context, Polygon polygon) {
         for (Camera camera : polygon.getCameras()) {
