@@ -25,22 +25,27 @@ public class CameraAdding {
         }
     }
 
+    //todo исправить момент с выходом прямой из многоугольника
     public static void addCamVisibilityField(Camera camera, CanvasRenderingContext2D context, Polygon polygon) {
         ArrayList<Vertex> vertexesToDrawLinesTo = new ArrayList<>();
         for (Vertex vertex : polygon.getVertexes()) {
+            logger.info("current vertex: (" + vertex.getX() + "," + vertex.getY() + ")");
             Line lineToDraw = new Line(vertex, camera);
             if (lineToDraw.canBeDrawn(polygon.getLines())) {
+                logger.info("line can be drawn");
                 if (!vertexesToDrawLinesTo.contains(vertex)) {
                     vertexesToDrawLinesTo.add(vertex);
                     Vertex vertexPlus = getCrossingVertexOfExtendedLine(lineToDraw.extendInOneWayPlus(), vertex, polygon.getLines());
                     if (vertexPlus != null && new Line(camera, vertexPlus).canBeDrawnExceptVertex(polygon.getLines(), vertex)) {
                         if (!vertexesToDrawLinesTo.contains(vertexPlus)) {
+                            logger.info("vertexPlus added");
                             vertexesToDrawLinesTo.add(vertexPlus);
                         }
                     }
                     Vertex vertexMinus = getCrossingVertexOfExtendedLine(lineToDraw.extendInOneWayMinus(), vertex, polygon.getLines());
                     if (vertexMinus != null && new Line(camera, vertexMinus).canBeDrawnExceptVertex(polygon.getLines(), vertex)) {
                         if (!vertexesToDrawLinesTo.contains(vertexMinus)) {
+                            logger.info("vertexMinus added");
                             vertexesToDrawLinesTo.add(vertexMinus);
                         }
                     }
@@ -48,11 +53,11 @@ public class CameraAdding {
             }
         }
 
-        context.moveTo(camera.getX(), camera.getY());
+        ArrayList<Vertex> resultVertexes = getOrderedVertexes(vertexesToDrawLinesTo, polygon.getLines());
+
+        context.moveTo(resultVertexes.get(0).getX(), resultVertexes.get(0).getY());
         context.setFillStyle("green");
         context.beginPath();
-
-        ArrayList<Vertex> resultVertexes = getOrderedVertexes(vertexesToDrawLinesTo, polygon.getLines());
 
         for (Vertex vertex : resultVertexes) {
             context.lineTo(vertex.getX(), vertex.getY());
@@ -65,7 +70,7 @@ public class CameraAdding {
         //раскомментировать для отрисовки вершин
 //        for (Vertex vertex : resultVertexes) {
 //            context.setFillStyle("red");
-//            context.fillRect(vertex.getX(), vertex.getY(), 9, 9);
+//            context.fillRect(vertex.getX(), vertex.getY(), 5, 5);
 //        }
     }
 

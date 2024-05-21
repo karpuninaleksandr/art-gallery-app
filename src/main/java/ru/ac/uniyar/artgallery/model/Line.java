@@ -15,6 +15,8 @@ public class Line {
     private Vertex start;
     private Vertex end;
 
+    private final double eps = 0.00000001;
+
     public boolean crosses(Line line) {
         Vertex crossVertex = getLinesCrossVertex(line);
         return crossVertex != null && start.isNotEqualTo(crossVertex) && end.isNotEqualTo(crossVertex);
@@ -132,8 +134,8 @@ public class Line {
     }
 
     public boolean checkIfVertexIsOnTheLine(Vertex startCheck, Vertex endCheck, Vertex check) {
-        return check.getY() >= Math.min(startCheck.getY(), endCheck.getY()) && check.getY() <= Math.max(startCheck.getY(), endCheck.getY()) && check.getX() >=
-                Math.min(startCheck.getX(), endCheck.getX()) && check.getX() <= Math.max(startCheck.getX(), endCheck.getX());
+        return startCheck.getDistanceToVertex(check) + endCheck.getDistanceToVertex(check) <= startCheck.getDistanceToVertex(endCheck) + eps &&
+                startCheck.getDistanceToVertex(check) + endCheck.getDistanceToVertex(check) >= startCheck.getDistanceToVertex(endCheck) - eps;
     }
 
     public boolean checkIfContainsVertex(Vertex check) {

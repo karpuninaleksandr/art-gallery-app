@@ -1,16 +1,14 @@
 package ru.ac.uniyar.artgallery.processing;
 
-import ru.ac.uniyar.artgallery.model.Polygon;
-import ru.ac.uniyar.artgallery.model.Triangle;
-import ru.ac.uniyar.artgallery.model.Vector;
-import ru.ac.uniyar.artgallery.model.Vertex;
+import org.vaadin.pekkam.CanvasRenderingContext2D;
+import ru.ac.uniyar.artgallery.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Triangulation {
 
-    public static void invoke(Polygon polygon) {
+    public static void invoke(Polygon polygon, CanvasRenderingContext2D context) {
         ArrayList<Vertex> vertexes = new ArrayList<>(polygon.getVertexes());
         boolean wayToGo = wayToGo(vertexes);
         int index = 0;
@@ -37,6 +35,16 @@ public class Triangulation {
                 ++index;
             }
         }
+
+        //раскомментить для отображения триангуляции
+//        for (Triangle triangle : polygon.getTriangles()) {
+//            for (Line line : triangle.getListOfLines()) {
+//                context.setStrokeStyle("black");
+//                context.moveTo(line.getStart().getX(), line.getStart().getY());
+//                context.lineTo(line.getEnd().getX(), line.getEnd().getY());
+//                context.stroke();
+//            }
+//        }
     }
 
     private static boolean validTriangle(Triangle triangle, List<Vertex> vertexes) {

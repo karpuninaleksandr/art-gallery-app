@@ -75,10 +75,11 @@ public class MainPageView extends VerticalLayout {
     public void createPolygon() {
         logger.info("creating polygon");
 
+//        polygon = new Polygon();
 //        polygon.addVertexes(List.of(
 //                new Vertex(100, 500),
-//                new Vertex(100, 800),
-//                new Vertex(700, 800),
+//                new Vertex(100, 650),
+//                new Vertex(700, 650),
 //                new Vertex(700, 600),
 //                new Vertex(500, 600),
 //                new Vertex(500, 300),
@@ -88,9 +89,9 @@ public class MainPageView extends VerticalLayout {
 //                new Vertex(200, 500)
 //        ));
 
-        polygon = PolygonGeneration.invoke(500, canvasHeight, canvasWidth, canvas.getContext());
+        polygon = PolygonGeneration.invoke(100, canvasHeight, canvasWidth, canvas.getContext());
         polygon.clearCams();
 
-//        Triangulation.invoke(polygon);
+        Triangulation.invoke(polygon, canvas.getContext());
     }
 }

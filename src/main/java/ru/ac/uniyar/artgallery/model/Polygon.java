@@ -22,6 +22,13 @@ public class Polygon {
 
     public void addVertexes(Collection<Vertex> vertexes) {
         this.vertexes.addAll(vertexes);
+        this.mapToOtherFormats();
+    }
+
+    public void mapToOtherFormats() {
+        for (int i = 0; i < vertexes.size() - 1;)
+            lines.add(new Line(vertexes.get(i), vertexes.get(++i)));
+        lines.add(new Line(vertexes.get(vertexes.size() - 1), vertexes.get(0)));
     }
 
     public void addLines(Collection<Line> lines) {

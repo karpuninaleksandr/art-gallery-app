@@ -69,9 +69,10 @@ public class PolygonGeneration {
             for (Line line : linesWithV1) {
                 if ((line.getEnd().isEqualTo(v1) && new Line(line.getStart(), randomVertex).canBeDrawn(segments)) ||
                         (line.getStart().isEqualTo(v1) && new Line(randomVertex, line.getEnd()).canBeDrawn(segments))) {
-                    segments.add(new Line(line.getStart(), randomVertex));
-                    segments.add(new Line(randomVertex, line.getEnd()));
+                    int segmentId = segments.indexOf(line);
                     segments.remove(line);
+                    segments.add(segmentId, new Line(line.getStart(), randomVertex));
+                    segments.add(segmentId + 1, new Line(randomVertex, line.getEnd()));
                     toBreak = true;
                     break;
                 }
@@ -91,16 +92,17 @@ public class PolygonGeneration {
         }
     }
 
-    //todo smth with polygon is wrong, triangulation & cameraAdding does not work
     private static Polygon createPolygonFromSegments() {
         Polygon polygon = new Polygon();
-        polygon.addLines(segments);
+        polygon.addVertexes(segments.stream().map(Line::getStart).toList());
         segments.clear();
 
-        logger.info("generated polygon: \n");
-        for (Vertex vertex : polygon.getVertexes()) {
-            logger.info("x: " + vertex.getX() + " " + "y: " + vertex.getY());
-        }
+        //раскомментить для логирования сгенерированного полигона
+//        logger.info("generated polygon: \n");
+//        for (Line line : polygon.getLines()) {
+//            logger.info("line from (" + line.getStart().getX() + "," + line.getStart().getY()
+//                    + ") to (" + line.getEnd().getX() + "," + line.getEnd().getY() + ")");
+//        }
 
         return polygon;
     }

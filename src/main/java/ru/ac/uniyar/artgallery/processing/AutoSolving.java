@@ -14,6 +14,7 @@ public class AutoSolving {
 
     private static final Logger logger = LoggerFactory.getLogger(AutoSolving.class);
 
+    //todo вечный цикл надо как-то поправить
     public static void invoke(Canvas canvas, Polygon polygon) {
         CanvasRenderingContext2D context = canvas.getContext();
         context.setStrokeStyle("black");
@@ -83,16 +84,6 @@ public class AutoSolving {
             index = done.size() - 1;
             logger.info("moving forward to index: " + index);
         }
-
-        //раскомментить для отображения триангуляции
-//        for (Triangle triangle : polygon.getTriangles()) {
-//            for (Line line : triangle.getListOfLines()) {
-//                context.setStrokeStyle("black");
-//                context.moveTo(line.getStart().getX(), line.getStart().getY());
-//                context.lineTo(line.getEnd().getX(), line.getEnd().getY());
-//                context.stroke();
-//            }
-//        }
     }
 
     public static Triangle getNextTriangleToCheck(Triangle last, ArrayList<Triangle> allTriangles,
