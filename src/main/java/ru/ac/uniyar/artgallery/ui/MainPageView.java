@@ -89,7 +89,7 @@ public class MainPageView extends VerticalLayout {
 //                new Vertex(200, 500)
 //        ));
 
-        polygon = PolygonGeneration.invoke(100, canvasHeight, canvasWidth, canvas.getContext());
+        polygon = PolygonGeneration.invoke(15, canvasHeight, canvasWidth, canvas.getContext());
         polygon.clearCams();
 
         Triangulation.invoke(polygon, canvas.getContext());

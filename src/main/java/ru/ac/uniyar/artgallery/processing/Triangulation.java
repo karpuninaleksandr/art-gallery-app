@@ -37,14 +37,14 @@ public class Triangulation {
         }
 
         //раскомментить для отображения триангуляции
-//        for (Triangle triangle : polygon.getTriangles()) {
-//            for (Line line : triangle.getListOfLines()) {
-//                context.setStrokeStyle("black");
-//                context.moveTo(line.getStart().getX(), line.getStart().getY());
-//                context.lineTo(line.getEnd().getX(), line.getEnd().getY());
-//                context.stroke();
-//            }
-//        }
+        for (Triangle triangle : polygon.getTriangles()) {
+            for (Line line : triangle.getListOfLines()) {
+                context.setStrokeStyle("black");
+                context.moveTo(line.getStart().getX(), line.getStart().getY());
+                context.lineTo(line.getEnd().getX(), line.getEnd().getY());
+                context.stroke();
+            }
+        }
     }
 
     private static boolean validTriangle(Triangle triangle, List<Vertex> vertexes) {
