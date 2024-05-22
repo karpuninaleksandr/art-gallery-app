@@ -20,7 +20,7 @@ public class PolygonGeneration {
 
     private static final Logger logger = LoggerFactory.getLogger(PolygonGeneration.class);
 
-    public static Polygon invoke(int numberOfVertexes, int height, int width, CanvasRenderingContext2D context) {
+    public static Polygon invoke(int numberOfVertexes, int height, int width) {
         PolygonGeneration.width = width;
         PolygonGeneration.height = height;
 
@@ -96,13 +96,6 @@ public class PolygonGeneration {
         Polygon polygon = new Polygon();
         polygon.addVertexes(segments.stream().map(Line::getStart).toList());
         segments.clear();
-
-        //раскомментить для логирования сгенерированного полигона
-//        logger.info("generated polygon: \n");
-//        for (Line line : polygon.getLines()) {
-//            logger.info("line from (" + line.getStart().getX() + "," + line.getStart().getY()
-//                    + ") to (" + line.getEnd().getX() + "," + line.getEnd().getY() + ")");
-//        }
 
         return polygon;
     }

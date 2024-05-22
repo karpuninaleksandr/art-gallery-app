@@ -2,22 +2,19 @@ package ru.ac.uniyar.artgallery.processing;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vaadin.pekkam.Canvas;
-import org.vaadin.pekkam.CanvasRenderingContext2D;
 import ru.ac.uniyar.artgallery.model.Polygon;
 import ru.ac.uniyar.artgallery.model.Triangle;
 import ru.ac.uniyar.artgallery.model.Vertex;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AutoSolving {
 
     private static final Logger logger = LoggerFactory.getLogger(AutoSolving.class);
 
     //todo save all colors of vertexes to get most efficient camera places
-    public static void invoke(Canvas canvas, Polygon polygon) {
-        CanvasRenderingContext2D context = canvas.getContext();
-        context.setStrokeStyle("black");
+    public static List<Vertex> invoke(Polygon polygon) {
 
         ArrayList<Vertex> skipped = new ArrayList<>();
         ArrayList<Vertex> cams = new ArrayList<>();
@@ -26,15 +23,13 @@ public class AutoSolving {
         int index = 0;
 
         Triangle check = trianglesToCheck.get(index);
-        context.setFillStyle("red");
-        context.fillRect(check.getVertex1().getX(), check.getVertex1().getY(), 4, 4);
         done.add(check);
         cams.add(check.getVertex1());
         skipped.add(check.getVertex3());
         skipped.add(check.getVertex2());
 
         check = getNextTriangleToCheck(check, trianglesToCheck, done);
-        if (check == null) return;
+        if (check == null) return cams;
 
         while (done.size() < trianglesToCheck.size()) {
             logger.info("index: " + index);
@@ -65,7 +60,6 @@ public class AutoSolving {
                     check = done.get(index);
                     continue;
                 }
-                context.fillRect(tobeRed.getX(), tobeRed.getY(), 4, 4);
                 cams.add(tobeRed);
             }
             if (!done.contains(check)) {
@@ -85,6 +79,7 @@ public class AutoSolving {
             index = done.size() - 1;
             logger.info("moving forward to index: " + index);
         }
+        return cams;
     }
 
     public static Triangle getNextTriangleToCheck(Triangle last, ArrayList<Triangle> allTriangles,

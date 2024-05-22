@@ -49,8 +49,11 @@ public class MainPageView extends VerticalLayout {
 
         canvas.addMouseClickListener(it -> {
             logger.info("clicked on " + it.getOffsetX() + " " + it.getOffsetY());
-            //todo recreate addCam method and do not transfer canvas to CameraAdding
-            CameraAdding.addCam(it.getOffsetX(), it.getOffsetY(), polygon, canvas);
+            List<Vertex> resultVertexes = CameraAdding.addCam(new Vertex(it.getOffsetX(), it.getOffsetY()), polygon);
+            if (!resultVertexes.isEmpty()) {
+                drawCamVisibilityField(canvas.getContext(), resultVertexes);
+                drawCameras(canvas.getContext(), polygon.getCameras());
+            }
         });
         //todo after adding camera check if polygon is fully seen by placed cameras
 
@@ -64,9 +67,11 @@ public class MainPageView extends VerticalLayout {
         Button refresh = new Button("NEXT LEVEL");
         refresh.addClickListener(it -> init());
 
-        //todo recreate invoke method and do not transfer canvas to AutoSolving
         Button autoSolve = new Button("SOLVE");
-        autoSolve.addClickListener(it -> AutoSolving.invoke(canvas, polygon));
+        autoSolve.addClickListener(it -> {
+            List<Vertex> cameras = AutoSolving.invoke(polygon);
+            drawCameras(canvas.getContext(), cameras);
+        });
         //todo if "SOLVE" button was pushed flag is needed to check that user did not solve task by himself,
         // of course no points are given in that situation
 
@@ -81,6 +86,33 @@ public class MainPageView extends VerticalLayout {
             context.moveTo(line.getStart().getX(), line.getStart().getY());
             context.lineTo(line.getEnd().getX(), line.getEnd().getY());
             context.stroke();
+        }
+    }
+
+    public void drawCamVisibilityField(CanvasRenderingContext2D context, List<Vertex> resultVertexes) {
+        context.moveTo(resultVertexes.get(0).getX(), resultVertexes.get(0).getY());
+        context.setFillStyle("green");
+        context.beginPath();
+
+        for (Vertex vertex : resultVertexes) {
+            context.lineTo(vertex.getX(), vertex.getY());
+        }
+        context.lineTo(resultVertexes.get(0).getX(), resultVertexes.get(0).getY());
+
+        context.closePath();
+        context.fill();
+
+        //раскомментировать для отрисовки вершин
+//        for (Vertex vertex : resultVertexes) {
+//            context.setFillStyle("red");
+//            context.fillRect(vertex.getX(), vertex.getY(), 5, 5);
+//        }
+    }
+
+    public void drawCameras(CanvasRenderingContext2D context, List<Vertex> cameras) {
+        for (Vertex camera : cameras) {
+            context.setFillStyle("red");
+            context.fillRect(camera.getX(), camera.getY(), 4, 4);
         }
     }
 
@@ -111,10 +143,17 @@ public class MainPageView extends VerticalLayout {
 //                new Vertex(942.3369286195543,351.7165598057472)
 //        ));
 
-        polygon = PolygonGeneration.invoke(20, canvasHeight, canvasWidth, canvas.getContext());
+        polygon = PolygonGeneration.invoke(20, canvasHeight, canvasWidth);
         polygon.clearCams();
 
         Triangulation.invoke(polygon);
+
+        //раскомментить для логирования сгенерированного полигона
+//        logger.info("generated polygon: \n");
+//        for (Line line : polygon.getLines()) {
+//            logger.info("line from (" + line.getStart().getX() + "," + line.getStart().getY()
+//                    + ") to (" + line.getEnd().getX() + "," + line.getEnd().getY() + ")");
+//        }
 
         //раскомментить для отображения триангуляции
 //        for (Triangle triangle : polygon.getTriangles()) {

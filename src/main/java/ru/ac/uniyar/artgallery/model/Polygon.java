@@ -14,7 +14,7 @@ public class Polygon {
 
     private final ArrayList<Vertex> vertexes = new ArrayList<>();
 
-    private ArrayList<Camera> cameras = new ArrayList<>();
+    private List<Vertex> cameras = new ArrayList<>();
 
     private final ArrayList<Line> lines = new ArrayList<>();
 
@@ -49,7 +49,7 @@ public class Polygon {
         this.triangles.add(triangle);
     }
 
-    public void addCamera(Camera camera) {
+    public void addCamera(Vertex camera) {
         this.cameras.add(camera);
     }
 

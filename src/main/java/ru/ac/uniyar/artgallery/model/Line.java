@@ -103,8 +103,8 @@ public class Line {
         return true;
     }
 
-    public boolean canBeDrawnExceptVertex(List<Line> lines, Vertex vertex) {
-        for (Line line : lines) {
+    public boolean canBeDrawnExceptVertex(Polygon polygon, Vertex vertex) {
+        for (Line line : polygon.getLines()) {
             if (this.crossesExceptVertex(line, vertex))
                 return false;
         }
