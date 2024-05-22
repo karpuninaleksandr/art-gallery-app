@@ -20,6 +20,7 @@ public class Vertex {
     }
 
     public boolean isNotEqualTo(Vertex vertex) {
+        if (vertex == null) return true;
         return !(Math.abs(x - vertex.getX()) < eps) || !(Math.abs(y - vertex.getY()) < eps);
     }
 

@@ -12,15 +12,15 @@ public class CameraAdding {
 
     private static final Logger logger = LoggerFactory.getLogger(CameraAdding.class);
 
-    public static List<Vertex> addCam(Vertex camera, Polygon polygon) {
+    public static Polygon getCamVisibilityField(Vertex camera, Polygon polygon) {
         if (polygon.checkIfPointIsInside(camera)) {
             polygon.addCamera(camera);
-            return addCamVisibilityField(camera, polygon);
-        } else return new ArrayList<>();
+            return createCamVisibilityField(camera, polygon);
+        } else return null;
     }
 
     //todo still some problems with camVisibility constructing
-    public static List<Vertex> addCamVisibilityField(Vertex camera, Polygon polygon) {
+    public static Polygon createCamVisibilityField(Vertex camera, Polygon polygon) {
         ArrayList<Vertex> vertexesToDrawLinesTo = new ArrayList<>();
         for (Vertex vertex : polygon.getVertexes()) {
             logger.info("current vertex: (" + vertex.getX() + "," + vertex.getY() + ")");
@@ -49,7 +49,9 @@ public class CameraAdding {
             }
         }
 
-        return getOrderedVertexes(vertexesToDrawLinesTo, polygon.getLines());
+        Polygon result = new Polygon();
+        result.addVertexes(getOrderedVertexes(vertexesToDrawLinesTo, polygon.getLines()));
+        return result;
     }
 
     public static Vertex getCrossingVertexOfExtendedLine(Line line, Vertex vertex, Polygon polygon) {

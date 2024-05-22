@@ -1,5 +1,6 @@
 package ru.ac.uniyar.artgallery.ui;
 
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PreserveOnRefresh;
@@ -16,6 +17,7 @@ import ru.ac.uniyar.artgallery.processing.CameraAdding;
 import ru.ac.uniyar.artgallery.processing.PolygonGeneration;
 import ru.ac.uniyar.artgallery.processing.Triangulation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,6 +33,7 @@ public class MainPageView extends VerticalLayout {
 
     private final Logger logger = LoggerFactory.getLogger(MainPageView.class);
     private Polygon polygon;
+    private List<Polygon> camVisibilityFields;
 
     private Canvas canvas;
 
@@ -49,17 +52,21 @@ public class MainPageView extends VerticalLayout {
 
         canvas.addMouseClickListener(it -> {
             logger.info("clicked on " + it.getOffsetX() + " " + it.getOffsetY());
-            List<Vertex> resultVertexes = CameraAdding.addCam(new Vertex(it.getOffsetX(), it.getOffsetY()), polygon);
-            if (!resultVertexes.isEmpty()) {
-                drawCamVisibilityField(canvas.getContext(), resultVertexes);
+            Polygon camVisibilityField = CameraAdding.getCamVisibilityField(new Vertex(it.getOffsetX(), it.getOffsetY()), polygon);
+//            Polygon camVisibilityField = CameraAdding.getCamVisibilityField(new Vertex(246, 618), polygon);
+            if (camVisibilityField != null) {
+                camVisibilityFields.add(camVisibilityField);
+                Triangulation.invoke(camVisibilityField);
+                drawCamVisibilityField(canvas.getContext(), camVisibilityField);
                 drawCameras(canvas.getContext(), polygon.getCameras());
             }
+
+            if (polygon.isFullyCovered(camVisibilityFields)) {
+                //todo add statistics, show autosolving, compare and give points
+                Text endOfLevel = new Text("Level is finished! Let's move to the next one");
+                add(endOfLevel);
+            }
         });
-        //todo after adding camera check if polygon is fully seen by placed cameras
-
-        //todo after polygon is fully covered with visibility fields sout autosolving and compare number of
-        // suggested cams to number of placed ones and give some points
-
 
         createPolygon();
         addWalls(canvas.getContext());
@@ -89,15 +96,15 @@ public class MainPageView extends VerticalLayout {
         }
     }
 
-    public void drawCamVisibilityField(CanvasRenderingContext2D context, List<Vertex> resultVertexes) {
-        context.moveTo(resultVertexes.get(0).getX(), resultVertexes.get(0).getY());
+    public void drawCamVisibilityField(CanvasRenderingContext2D context, Polygon field) {
+        context.moveTo(field.getVertexes().get(0).getX(), field.getVertexes().get(0).getY());
         context.setFillStyle("green");
         context.beginPath();
 
-        for (Vertex vertex : resultVertexes) {
+        for (Vertex vertex : field.getVertexes()) {
             context.lineTo(vertex.getX(), vertex.getY());
         }
-        context.lineTo(resultVertexes.get(0).getX(), resultVertexes.get(0).getY());
+        context.lineTo(field.getVertexes().get(0).getX(), field.getVertexes().get(0).getY());
 
         context.closePath();
         context.fill();
@@ -119,7 +126,9 @@ public class MainPageView extends VerticalLayout {
     public void createPolygon() {
         logger.info("creating polygon");
 
-//        polygon = new Polygon();
+        camVisibilityFields = new ArrayList<>();
+
+        polygon = new Polygon();
 //        polygon.addVertexes(List.of(
 //                new Vertex(614.7416773348622,104.29977497886385),
 //                new Vertex(539.3231136228142,117.89462707832206),
@@ -143,6 +152,18 @@ public class MainPageView extends VerticalLayout {
 //                new Vertex(942.3369286195543,351.7165598057472)
 //        ));
 
+//        polygon.addVertexes(List.of(
+//                new Vertex(100, 500),
+//                new Vertex(100, 650),
+//                new Vertex(700, 650),
+//                new Vertex(700, 600),
+//                new Vertex(500, 600),
+//                new Vertex(500, 300),
+//                new Vertex(300, 300),
+//                new Vertex(300, 100),
+//                new Vertex(200, 100),
+//                new Vertex(200, 500)
+//        ));
         polygon = PolygonGeneration.invoke(20, canvasHeight, canvasWidth);
         polygon.clearCams();
 

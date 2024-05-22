@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 public class Polygon {
-    private final double eps = 0.00001;
+    private final double eps = 0.001;
 
     private final ArrayList<Vertex> vertexes = new ArrayList<>();
 
@@ -59,7 +59,8 @@ public class Polygon {
             Triangle smallTriangle2 = new Triangle(checkVertex, triangle.getVertex2(), triangle.getVertex3());
             Triangle smallTriangle3 = new Triangle(checkVertex, triangle.getVertex1(), triangle.getVertex3());
 
-            if (Math.abs(triangle.getField() - (smallTriangle2.getField() + smallTriangle1.getField() + smallTriangle3.getField())) < eps)
+            if (Math.abs(triangle.getField() - (smallTriangle2.getField() + smallTriangle1.getField() + smallTriangle3.getField())) < eps
+                || Double.isNaN(Math.abs(triangle.getField() - (smallTriangle2.getField() + smallTriangle1.getField() + smallTriangle3.getField()))))
                 return true;
         }
         return false;
@@ -70,7 +71,7 @@ public class Polygon {
         double xDiff = line.getEnd().getX() - line.getStart().getX(),
                 yDiff = line.getEnd().getY() - line.getStart().getY();
         while (line.checkIfContainsVertex(currentCheck) && (currentCheck).isNotEqualTo(line.getEnd())) {
-            if (currentCheck.isNotEqualTo(except) && !checkIfPointIsInside(currentCheck)) {
+            if (currentCheck.isNotEqualTo(except) && !checkIfPointIsInside(currentCheck) && checkIfBordersDoNotContainVertex(currentCheck)) {
                 return false;
             }
             currentCheck.setX(currentCheck.getX() + xDiff / 75);
@@ -79,7 +80,42 @@ public class Polygon {
         return true;
     }
 
+    public boolean checkIfBordersDoNotContainVertex(Vertex vertex) {
+        for (Line line : lines) {
+            if (line.checkIfContainsVertex(vertex)) return false;
+        }
+        return true;
+    }
+
     public void clearCams() {
         this.cameras = new ArrayList<>();
+    }
+
+    //todo some problems here ->
+    public boolean isFullyCovered(List<Polygon> camVisibilityFields) {
+        for (Triangle triangle : this.triangles) {
+            boolean isInside = false;
+            for (Polygon field : camVisibilityFields) {
+                if (field.hasTriangleInside(triangle)) {
+                    isInside = true;
+                    break;
+                }
+            }
+            if (!isInside) {
+                System.out.println("triangle that is not inside any of fields : " +
+                        "(" + triangle.getVertex1().getX() + "," + triangle.getVertex1().getY() + ")" +
+                        "(" + triangle.getVertex2().getX() + "," + triangle.getVertex2().getY() + ")" +
+                        "(" + triangle.getVertex3().getX() + "," + triangle.getVertex3().getY() + ")");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean hasTriangleInside(Triangle triangle) {
+        return this.checkIfPointIsInside(triangle.getVertex1()) && this.checkIfPointIsInside(triangle.getVertex2())
+                && this.checkIfPointIsInside(triangle.getVertex3()) && this.checkIfLineIsInsideExceptVertex(triangle.getListOfLines().get(0), null)
+                && this.checkIfLineIsInsideExceptVertex(triangle.getListOfLines().get(1), null)
+                && this.checkIfLineIsInsideExceptVertex(triangle.getListOfLines().get(2), null);
     }
 }
