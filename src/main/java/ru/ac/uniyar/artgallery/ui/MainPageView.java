@@ -49,17 +49,27 @@ public class MainPageView extends VerticalLayout {
 
         canvas.addMouseClickListener(it -> {
             logger.info("clicked on " + it.getOffsetX() + " " + it.getOffsetY());
+            //todo recreate addCam method and do not transfer canvas to CameraAdding
             CameraAdding.addCam(it.getOffsetX(), it.getOffsetY(), polygon, canvas);
         });
+        //todo after adding camera check if polygon is fully seen by placed cameras
+
+        //todo after polygon is fully covered with visibility fields sout autosolving and compare number of
+        // suggested cams to number of placed ones and give some points
+
 
         createPolygon();
         addWalls(canvas.getContext());
 
-        Button refresh = new Button("REFRESH");
+        Button refresh = new Button("NEXT LEVEL");
         refresh.addClickListener(it -> init());
 
+        //todo recreate invoke method and do not transfer canvas to AutoSolving
         Button autoSolve = new Button("SOLVE");
         autoSolve.addClickListener(it -> AutoSolving.invoke(canvas, polygon));
+        //todo if "SOLVE" button was pushed flag is needed to check that user did not solve task by himself,
+        // of course no points are given in that situation
+
 
         add(refresh, autoSolve, canvas);
     }

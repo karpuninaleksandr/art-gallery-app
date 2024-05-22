@@ -25,6 +25,7 @@ public class CameraAdding {
         }
     }
 
+    //todo still some problems with camVisibility constructing
     public static void addCamVisibilityField(Camera camera, CanvasRenderingContext2D context, Polygon polygon) {
         ArrayList<Vertex> vertexesToDrawLinesTo = new ArrayList<>();
         for (Vertex vertex : polygon.getVertexes()) {
