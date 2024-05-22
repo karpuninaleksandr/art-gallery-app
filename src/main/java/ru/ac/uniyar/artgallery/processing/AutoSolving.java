@@ -14,6 +14,7 @@ public class AutoSolving {
 
     private static final Logger logger = LoggerFactory.getLogger(AutoSolving.class);
 
+    //todo save all colors of vertexes to get most efficient camera places
     public static void invoke(Canvas canvas, Polygon polygon) {
         CanvasRenderingContext2D context = canvas.getContext();
         context.setStrokeStyle("black");

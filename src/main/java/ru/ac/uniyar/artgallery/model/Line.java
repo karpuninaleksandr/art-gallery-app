@@ -15,7 +15,7 @@ public class Line {
     private Vertex start;
     private Vertex end;
 
-    private final double eps = 0.00000001;
+    private final double eps = 0.00001;
 
     public boolean crosses(Line line) {
         Vertex crossVertex = getLinesCrossVertex(line);

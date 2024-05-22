@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 public class Polygon {
-    private final double eps = 0.00000001;
+    private final double eps = 0.00001;
 
     private final ArrayList<Vertex> vertexes = new ArrayList<>();
 
@@ -55,15 +55,28 @@ public class Polygon {
 
     public boolean checkIfPointIsInside(Vertex checkVertex) {
         for (Triangle triangle : triangles) {
-            double biqField = triangle.getField();
             Triangle smallTriangle1 = new Triangle(checkVertex, triangle.getVertex1(), triangle.getVertex2());
             Triangle smallTriangle2 = new Triangle(checkVertex, triangle.getVertex2(), triangle.getVertex3());
             Triangle smallTriangle3 = new Triangle(checkVertex, triangle.getVertex1(), triangle.getVertex3());
 
-            if (Math.abs(biqField - (smallTriangle2.getField() + smallTriangle1.getField() + smallTriangle3.getField())) < eps)
+            if (Math.abs(triangle.getField() - (smallTriangle2.getField() + smallTriangle1.getField() + smallTriangle3.getField())) < eps)
                 return true;
         }
         return false;
+    }
+
+    public boolean checkIfLineIsInsideExceptVertex(Line line, Vertex except) {
+        Vertex currentCheck = new Vertex(line.getStart().getX(), line.getStart().getY());
+        double xDiff = line.getEnd().getX() - line.getStart().getX(),
+                yDiff = line.getEnd().getY() - line.getStart().getY();
+        while (line.checkIfContainsVertex(currentCheck) && (currentCheck).isNotEqualTo(line.getEnd())) {
+            if (currentCheck.isNotEqualTo(except) && !checkIfPointIsInside(currentCheck)) {
+                return false;
+            }
+            currentCheck.setX(currentCheck.getX() + xDiff / 75);
+            currentCheck.setY(currentCheck.getY() + yDiff / 75);
+        }
+        return true;
     }
 
     public void clearCams() {

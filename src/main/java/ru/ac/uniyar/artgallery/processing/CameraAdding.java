@@ -25,7 +25,6 @@ public class CameraAdding {
         }
     }
 
-    //todo исправить момент с выходом прямой из многоугольника
     public static void addCamVisibilityField(Camera camera, CanvasRenderingContext2D context, Polygon polygon) {
         ArrayList<Vertex> vertexesToDrawLinesTo = new ArrayList<>();
         for (Vertex vertex : polygon.getVertexes()) {
@@ -36,14 +35,16 @@ public class CameraAdding {
                 if (!vertexesToDrawLinesTo.contains(vertex)) {
                     vertexesToDrawLinesTo.add(vertex);
                     Vertex vertexPlus = getCrossingVertexOfExtendedLine(lineToDraw.extendInOneWayPlus(), vertex, polygon.getLines());
-                    if (vertexPlus != null && new Line(camera, vertexPlus).canBeDrawnExceptVertex(polygon.getLines(), vertex)) {
+                    if (vertexPlus != null && new Line(camera, vertexPlus).canBeDrawnExceptVertex(polygon.getLines(), vertex)
+                            && polygon.checkIfLineIsInsideExceptVertex(new Line(camera, vertexPlus), vertex)) {
                         if (!vertexesToDrawLinesTo.contains(vertexPlus)) {
                             logger.info("vertexPlus added");
                             vertexesToDrawLinesTo.add(vertexPlus);
                         }
                     }
                     Vertex vertexMinus = getCrossingVertexOfExtendedLine(lineToDraw.extendInOneWayMinus(), vertex, polygon.getLines());
-                    if (vertexMinus != null && new Line(camera, vertexMinus).canBeDrawnExceptVertex(polygon.getLines(), vertex)) {
+                    if (vertexMinus != null && new Line(camera, vertexMinus).canBeDrawnExceptVertex(polygon.getLines(), vertex)
+                            && polygon.checkIfLineIsInsideExceptVertex(new Line(camera, vertexMinus), vertex)) {
                         if (!vertexesToDrawLinesTo.contains(vertexMinus)) {
                             logger.info("vertexMinus added");
                             vertexesToDrawLinesTo.add(vertexMinus);
