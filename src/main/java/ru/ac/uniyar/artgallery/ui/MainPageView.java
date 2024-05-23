@@ -176,7 +176,9 @@ public class MainPageView extends VerticalLayout {
 //                    + ") to (" + line.getEnd().getX() + "," + line.getEnd().getY() + ")");
 //        }
 
+
         //раскомментить для отображения триангуляции
+//        CanvasRenderingContext2D context = canvas.getContext();
 //        for (Triangle triangle : polygon.getTriangles()) {
 //            for (Line line : triangle.getListOfLines()) {
 //                context.setStrokeStyle("black");

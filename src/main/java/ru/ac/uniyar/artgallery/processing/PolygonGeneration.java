@@ -2,7 +2,6 @@ package ru.ac.uniyar.artgallery.processing;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vaadin.pekkam.CanvasRenderingContext2D;
 import ru.ac.uniyar.artgallery.model.Line;
 import ru.ac.uniyar.artgallery.model.Polygon;
 import ru.ac.uniyar.artgallery.model.Triangle;

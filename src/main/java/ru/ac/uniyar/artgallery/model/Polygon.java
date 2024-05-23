@@ -102,10 +102,10 @@ public class Polygon {
                 }
             }
             if (!isInside) {
-                System.out.println("triangle that is not inside any of fields : " +
-                        "(" + triangle.getVertex1().getX() + "," + triangle.getVertex1().getY() + ")" +
-                        "(" + triangle.getVertex2().getX() + "," + triangle.getVertex2().getY() + ")" +
-                        "(" + triangle.getVertex3().getX() + "," + triangle.getVertex3().getY() + ")");
+//                System.out.println("triangle that is not inside any of fields : " +
+//                        "(" + triangle.getVertex1().getX() + "," + triangle.getVertex1().getY() + ")" +
+//                        "(" + triangle.getVertex2().getX() + "," + triangle.getVertex2().getY() + ")" +
+//                        "(" + triangle.getVertex3().getX() + "," + triangle.getVertex3().getY() + ")");
                 return false;
             }
         }

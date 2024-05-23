@@ -19,7 +19,7 @@ public class CameraAdding {
         } else return null;
     }
 
-    //todo still some problems with camVisibility constructing
+    //todo still some problems with camVisibility constructing, somethere here is problem with ininite loop, too
     public static Polygon createCamVisibilityField(Vertex camera, Polygon polygon) {
         ArrayList<Vertex> vertexesToDrawLinesTo = new ArrayList<>();
         for (Vertex vertex : polygon.getVertexes()) {

@@ -13,73 +13,260 @@ public class AutoSolving {
 
     private static final Logger logger = LoggerFactory.getLogger(AutoSolving.class);
 
-    //todo save all colors of vertexes to get most efficient camera places
     public static List<Vertex> invoke(Polygon polygon) {
 
-        ArrayList<Vertex> skipped = new ArrayList<>();
-        ArrayList<Vertex> cams = new ArrayList<>();
+        ArrayList<Vertex> reds = new ArrayList<>();
+        ArrayList<Vertex> greens = new ArrayList<>();
+        ArrayList<Vertex> blues = new ArrayList<>();
+
         ArrayList<Triangle> done = new ArrayList<>();
         ArrayList<Triangle> trianglesToCheck = new ArrayList<>(polygon.getTriangles());
         int index = 0;
 
-        Triangle check = trianglesToCheck.get(index);
+        Triangle check = trianglesToCheck.get(0);
         done.add(check);
-        cams.add(check.getVertex1());
-        skipped.add(check.getVertex3());
-        skipped.add(check.getVertex2());
+        reds.add(check.getVertex2());
+        greens.add(check.getVertex1());
+        blues.add(check.getVertex3());
 
         check = getNextTriangleToCheck(check, trianglesToCheck, done);
-        if (check == null) return cams;
+        if (check == null) return reds;
 
         while (done.size() < trianglesToCheck.size()) {
             logger.info("index: " + index);
-
-            if (cams.contains(check.getVertex1())) {
-                skipped.add(check.getVertex2());
-                skipped.add(check.getVertex3());
-            } else if (cams.contains(check.getVertex2())) {
-                skipped.add(check.getVertex1());
-                skipped.add(check.getVertex3());
-            } else if (cams.contains(check.getVertex3())) {
-                skipped.add(check.getVertex1());
-                skipped.add(check.getVertex2());
-            } else {
-                Vertex tobeRed;
-                if (!skipped.contains(check.getVertex1()))
-                    tobeRed = check.getVertex1();
-                else if (!skipped.contains(check.getVertex2()))
-                    tobeRed = check.getVertex2();
-                else if (!skipped.contains(check.getVertex3()))
-                    tobeRed = check.getVertex3();
-                else {
+            if (!done.contains(check)) done.add(check);
+            if (!paintTriangle(reds, greens, blues, check.getVertex1(), check.getVertex2(), check.getVertex3())) {
+                int curr = done.indexOf(check);
+                check = getNextTriangleToCheck(check, trianglesToCheck, done);
+                if (check == null) {
                     logger.info("moving backwards to index: " + (index - 1));
-                    if (index == 0) {
+                    if (index == 0) break;
+                    check = done.get(index);
+                    --index;
+                } else {
+                    index = curr;
+                    logger.info("moving forward to index: " + index);
+                }
+            } else {
+                check = getNextTriangleToCheck(check, trianglesToCheck, done);
+                if (check == null) {
+                    logger.info("moving backwards to index: " + (index - 1));
+                    if (index == 0) break;
+                    check = done.get(index);
+                    --index;
+                } else {
+                    index = done.size() - 1;
+                    logger.info("moving forward to index: " + index);
+                }
+            }
+        }
+        if (reds.size() <= greens.size()) {
+            return reds.size() <= blues.size() ? reds : blues;
+        } else {
+            return greens.size() <= blues.size() ? greens : blues;
+        }
+    }
+
+    public static boolean paintTriangle(List<Vertex> reds, List<Vertex> greens, List<Vertex> blues, Vertex v1, Vertex v2, Vertex v3) {
+        List<Vertex> allColoredVertexes = new ArrayList<>(reds);
+        allColoredVertexes.addAll(greens);
+        allColoredVertexes.addAll(blues);
+        boolean v1isColored = allColoredVertexes.contains(v1);
+        boolean v2isColored = allColoredVertexes.contains(v2);
+        boolean v3isColored = allColoredVertexes.contains(v3);
+        if (v1isColored && v2isColored && v3isColored)
+            return false;
+        String v1Color = getVertexColor(reds, greens, blues, v1);
+        String v2Color = getVertexColor(reds, greens, blues, v2);
+        String v3Color = getVertexColor(reds, greens, blues, v3);
+
+        switch (v1Color) {
+            case "red": {
+                switch (v2Color) {
+                    case "green": {
+                        blues.add(v3);
                         break;
                     }
-                    --index;
-                    check = done.get(index);
-                    continue;
+                    case "blue": {
+                        greens.add(v3);
+                        break;
+                    }
+                    case "no_color": {
+                        switch (v3Color) {
+                            case "green": {
+                                blues.add(v2);
+                                break;
+                            }
+                            case "blue": {
+                                greens.add(v2);
+                                break;
+                            }
+                            case "no_color": {
+                                greens.add(v2);
+                                blues.add(v3);
+                                break;
+                            }
+                        }
+                        break;
+                    }
                 }
-                cams.add(tobeRed);
-            }
-            if (!done.contains(check)) {
-                done.add(check);
-            }
-            check = getNextTriangleToCheck(check, trianglesToCheck, done);
-
-            if (check == null && index > 0) {
-                logger.info("moving backwards to index: " + (index - 1));
-                check = done.get(index);
-                --index;
-                continue;
-            }
-            if (check == null && index == 0) {
                 break;
             }
-            index = done.size() - 1;
-            logger.info("moving forward to index: " + index);
+            case "green": {
+                switch (v2Color) {
+                    case "red": {
+                        blues.add(v3);
+                        break;
+                    }
+                    case "blue": {
+                        reds.add(v3);
+                        break;
+                    }
+                    case "no_color": {
+                        switch (v3Color) {
+                            case "red": {
+                                blues.add(v2);
+                                break;
+                            }
+                            case "blue": {
+                                reds.add(v2);
+                                break;
+                            }
+                            case "no_color": {
+                                reds.add(v2);
+                                blues.add(v3);
+                            }
+                        }
+                        break;
+                    }
+                }
+                break;
+            }
+            case "blue": {
+                switch (v2Color) {
+                    case "red": {
+                        greens.add(v3);
+                        break;
+                    }
+                    case "green": {
+                        reds.add(v3);
+                        break;
+                    }
+                    case "no_color": {
+                        switch (v3Color) {
+                            case "red": {
+                                greens.add(v2);
+                                break;
+                            }
+                            case "green": {
+                                reds.add(v2);
+                                break;
+                            }
+                            case "no_color": {
+                                reds.add(v2);
+                                greens.add(v3);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+                break;
+            }
+            case "no_color": {
+                switch (v2Color) {
+                    case "red": {
+                        switch (v3Color) {
+                            case "green": {
+                                blues.add(v1);
+                                break;
+                            }
+                            case "blue": {
+                                greens.add(v1);
+                                break;
+                            }
+                            case "no_color": {
+                                greens.add(v1);
+                                blues.add(v3);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case "green": {
+                        switch (v3Color) {
+                            case "red": {
+                                blues.add(v1);
+                                break;
+                            }
+                            case "blue": {
+                                reds.add(v1);
+                                break;
+                            }
+                            case "no_color": {
+                                reds.add(v1);
+                                blues.add(v3);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case "blue": {
+                        switch (v3Color) {
+                            case "red": {
+                                greens.add(v1);
+                                break;
+                            }
+                            case "green": {
+                                reds.add(v1);
+                                break;
+                            }
+                            case "no_color": {
+                                reds.add(v1);
+                                greens.add(v3);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case "no_color": {
+                        switch (v3Color) {
+                            case "red": {
+                                greens.add(v1);
+                                blues.add(v2);
+                                break;
+                            }
+                            case "green": {
+                                reds.add(v1);
+                                blues.add(v2);
+                                break;
+                            }
+                            case "blue": {
+                                reds.add(v1);
+                                greens.add(v2);
+                                break;
+                            }
+                            case "no_color": {
+                                reds.add(v1);
+                                greens.add(v2);
+                                blues.add(v3);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+                break;
+            }
         }
-        return cams;
+        return true;
+    }
+
+    public static String getVertexColor(List<Vertex> reds, List<Vertex> greens, List<Vertex> blues, Vertex check) {
+        if (reds.contains(check)) return "red";
+        if (greens.contains(check)) return "green";
+        if (blues.contains(check)) return "blue";
+        return "no_color";
     }
 
     public static Triangle getNextTriangleToCheck(Triangle last, ArrayList<Triangle> allTriangles,
