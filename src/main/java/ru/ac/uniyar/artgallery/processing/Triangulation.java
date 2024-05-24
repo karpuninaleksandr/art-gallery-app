@@ -7,11 +7,12 @@ import java.util.List;
 
 public class Triangulation {
 
+    //todo fix -> too long to be waited for (can be more than 70 sec)
     public static void invoke(Polygon polygon) {
         ArrayList<Vertex> vertexes = new ArrayList<>(polygon.getVertexes());
+        System.out.println("triangulation size: " + vertexes.size());
         boolean wayToGo = wayToGo(vertexes);
         int index = 0;
-
         while (vertexes.size() > 2) {
             Vertex vertex1 = vertexes.get(Math.abs(index % vertexes.size()));
             Vertex vertex2 = vertexes.get(Math.abs((index + 1) % vertexes.size()));

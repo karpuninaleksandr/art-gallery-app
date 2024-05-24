@@ -53,13 +53,12 @@ public class MainPageView extends VerticalLayout {
         canvas.addMouseClickListener(it -> {
             logger.info("clicked on " + it.getOffsetX() + " " + it.getOffsetY());
             Polygon camVisibilityField = CameraAdding.getCamVisibilityField(new Vertex(it.getOffsetX(), it.getOffsetY()), polygon);
-//            Polygon camVisibilityField = CameraAdding.getCamVisibilityField(new Vertex(246, 618), polygon);
             if (camVisibilityField != null) {
                 logger.info("is not null");
                 camVisibilityFields.add(camVisibilityField);
-                logger.info("started triangulation");
-                Triangulation.invoke(camVisibilityField);
-                logger.info("ended triangulation");
+//                logger.info("started triangulation");
+//                Triangulation.invoke(camVisibilityField);
+//                logger.info("ended triangulation");
                 drawCamVisibilityField(canvas.getContext(), camVisibilityField);
                 drawCameras(canvas.getContext(), polygon.getCameras());
             }
@@ -111,12 +110,6 @@ public class MainPageView extends VerticalLayout {
 
         context.closePath();
         context.fill();
-
-        //раскомментировать для отрисовки вершин
-//        for (Vertex vertex : resultVertexes) {
-//            context.setFillStyle("red");
-//            context.fillRect(vertex.getX(), vertex.getY(), 5, 5);
-//        }
     }
 
     public void drawCameras(CanvasRenderingContext2D context, List<Vertex> cameras) {
@@ -131,43 +124,31 @@ public class MainPageView extends VerticalLayout {
 
         camVisibilityFields = new ArrayList<>();
 
-        polygon = new Polygon();
-        polygon.addVertexes(List.of(
-                new Vertex(614.7416773348622,104.29977497886385),
-                new Vertex(539.3231136228142,117.89462707832206),
-                new Vertex(653.6058117961721,214.88664206744875),
-                new Vertex(290.85976208875974,1.836442275572181),
-                new Vertex(129.21778467466072,107.35675948311123),
-                new Vertex(259.398207739972,39.829442034007215),
-                new Vertex(358.26168639047415,161.09589351819835),
-                new Vertex(598.3673934192761,473.9760002542412),
-                new Vertex(665.2526187166119,618.0796464752599),
-                new Vertex(594.1795224563176,559.0777820144898),
-                new Vertex(507.9657664111401,453.80370274367425),
-                new Vertex(39.32180677149199,266.81961717904886),
-                new Vertex(248.11090976691185,423.73909217273416),
-                new Vertex(318.5735667753201,548.2441570593526),
-                new Vertex(362.73818256507707,613.3990016851842),
-                new Vertex(190.20009384813662,656.0276688066103),
-                new Vertex(360.3655948294926,654.2240010821811),
-                new Vertex(826.504145166809,605.2642199093323),
-                new Vertex(958.6401257320492,448.87153029640217),
-                new Vertex(942.3369286195543,351.7165598057472)
-        ));
-
+//        polygon = new Polygon();
 //        polygon.addVertexes(List.of(
-//                new Vertex(100, 500),
-//                new Vertex(100, 650),
-//                new Vertex(700, 650),
-//                new Vertex(700, 600),
-//                new Vertex(500, 600),
-//                new Vertex(500, 300),
-//                new Vertex(300, 300),
-//                new Vertex(300, 100),
-//                new Vertex(200, 100),
-//                new Vertex(200, 500)
+//                new Vertex(695.5581175986968,130.0403855826727),
+//                new Vertex(790.5483075402233,381.9220578203906),
+//                new Vertex(927.8144094413664,605.0986196880497),
+//                new Vertex(737.1279304457148,220.97031305547657),
+//                new Vertex(819.1460791721355,212.27462325308807),
+//                new Vertex(993.2119411835444,277.2947523227727),
+//                new Vertex(972.8666537831008,44.63558420247373),
+//                new Vertex(932.2465585713729,242.6982989178366),
+//                new Vertex(626.9840423723022,83.84466514479922),
+//                new Vertex(351.67026580693084,228.8566923805847),
+//                new Vertex(552.1604920325107,202.61444716391918),
+//                new Vertex(19.33015932779092,616.1884610322708),
+//                new Vertex(361.87827024581475,436.54720066452046),
+//                new Vertex(363.84640731855256,562.8331569692725),
+//                new Vertex(262.5856324001448,623.6466830987562),
+//                new Vertex(184.64201900710864,687.9319585990779),
+//                new Vertex(594.732860251488,603.7142679249515),
+//                new Vertex(545.8448834607615,548.8699215737292),
+//                new Vertex(483.95349613553384,475.9176434808329),
+//                new Vertex(556.5700875590073,418.7508164052168)
 //        ));
-//        polygon = PolygonGeneration.invoke(20, canvasHeight, canvasWidth);
+
+        polygon = PolygonGeneration.invoke(20, canvasHeight, canvasWidth);
         polygon.clearCams();
 
         Triangulation.invoke(polygon);

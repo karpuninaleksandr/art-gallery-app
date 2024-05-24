@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Vertex {
-    private final double eps = 0.00000001;
+    private final double eps = 0.001;
 
     private double x;
     private double y;

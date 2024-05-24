@@ -19,21 +19,17 @@ public class CameraAdding {
         } else return null;
     }
 
-    //todo still some problems with camVisibility constructing
     public static Polygon createCamVisibilityField(Vertex camera, Polygon polygon) {
         ArrayList<Vertex> vertexesToDrawLinesTo = new ArrayList<>();
         for (Vertex vertex : polygon.getVertexes()) {
-            logger.info("current vertex: (" + vertex.getX() + "," + vertex.getY() + ")");
             Line lineToDraw = new Line(vertex, camera);
             if (lineToDraw.canBeDrawn(polygon.getLines())) {
-                logger.info("line can be drawn");
                 if (!vertexesToDrawLinesTo.contains(vertex)) {
                     vertexesToDrawLinesTo.add(vertex);
                     Vertex vertexPlus = getCrossingVertexOfExtendedLine(lineToDraw.extendInOneWayPlus(), vertex, polygon);
                     if (vertexPlus != null && new Line(camera, vertexPlus).canBeDrawnExceptVertex(polygon, vertex)
                             && polygon.checkIfLineIsInsideExceptVertex(new Line(camera, vertexPlus), vertex)) {
                         if (!vertexesToDrawLinesTo.contains(vertexPlus)) {
-                            logger.info("vertexPlus added");
                             vertexesToDrawLinesTo.add(vertexPlus);
                         }
                     }
@@ -41,7 +37,6 @@ public class CameraAdding {
                     if (vertexMinus != null && new Line(camera, vertexMinus).canBeDrawnExceptVertex(polygon, vertex)
                             && polygon.checkIfLineIsInsideExceptVertex(new Line(camera, vertexMinus), vertex)) {
                         if (!vertexesToDrawLinesTo.contains(vertexMinus)) {
-                            logger.info("vertexMinus added");
                             vertexesToDrawLinesTo.add(vertexMinus);
                         }
                     }
@@ -55,12 +50,16 @@ public class CameraAdding {
     }
 
     public static Vertex getCrossingVertexOfExtendedLine(Line line, Vertex vertex, Polygon polygon) {
+        Vertex crossVertex = new Vertex(100000, 100000);
         for (Line linePolygon : polygon.getLines()) {
             if (linePolygon.crossesExceptVertex(line, vertex)) {
-                return line.getLinesCrossVertex(linePolygon);
+                if (line.getLinesCrossVertex(linePolygon).getDistanceToVertex(vertex) <
+                        crossVertex.getDistanceToVertex(vertex)) {
+                    crossVertex = line.getLinesCrossVertex(linePolygon);
+                }
             }
         }
-        return null;
+        return crossVertex.isEqualTo(new Vertex(100000, 100000)) ? null : crossVertex;
     }
 
     public static List<Vertex> getOrderedVertexes(ArrayList<Vertex> vertexesWithNoOrder, List<Line> lines) {

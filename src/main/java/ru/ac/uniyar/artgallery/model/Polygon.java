@@ -74,7 +74,6 @@ public class Polygon {
             if (currentCheck.isNotEqualTo(except) && !checkIfPointIsInside(currentCheck) && checkIfBordersDoNotContainVertex(currentCheck)) {
                 return false;
             }
-            System.out.println("currentCheck is (" + currentCheck.getX() + "," + currentCheck.getY() + ")");
             currentCheck.setX(currentCheck.getX() + xDiff / 75);
             currentCheck.setY(currentCheck.getY() + yDiff / 75);
         }
