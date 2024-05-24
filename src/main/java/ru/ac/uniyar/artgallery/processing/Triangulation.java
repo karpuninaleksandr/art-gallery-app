@@ -28,6 +28,7 @@ public class Triangulation {
                 if (validTriangle(triangle, vertexes)) {
                     vertexes.remove(Math.abs((index + 1) % vertexes.size()));
                     polygon.addTriangle(triangle);
+                    index = 0;
                 } else ++index;
             } else ++index;
         }
