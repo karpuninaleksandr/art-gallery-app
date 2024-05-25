@@ -1,56 +1,74 @@
 package ru.ac.uniyar.artgallery.processing;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.ac.uniyar.artgallery.model.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Triangulation {
 
-    //todo fix -> too long to be waited for (can be more than 70 sec)
+    private static final Logger logger = LoggerFactory.getLogger(Triangulation.class);
+
     public static void invoke(Polygon polygon) {
-        ArrayList<Vertex> vertexes = new ArrayList<>(polygon.getVertexes());
-        System.out.println("triangulation size: " + vertexes.size());
-        boolean wayToGo = wayToGo(vertexes);
-        int index = 0;
-        while (vertexes.size() > 2) {
-            Vertex vertex1 = vertexes.get(Math.abs(index % vertexes.size()));
-            Vertex vertex2 = vertexes.get(Math.abs((index + 1) % vertexes.size()));
-            Vertex vertex3 = vertexes.get(Math.abs((index + 2) % vertexes.size()));
+        int n = polygon.getVertexes().size();
+        if (n < 3) return;
 
-            Vector vector1 = new Vector(vertex2.getX() - vertex1.getX(), vertex2.getY() - vertex1.getY());
-            Vector vector2 = new Vector(vertex3.getX() - vertex1.getX(), vertex3.getY() - vertex1.getY());
+        int[] indices = new int[n];
+        if (area(polygon) > 0) {
+            for (int i = 0; i < n; i++) {
+                indices[i] = i;
+            }
+        } else {
+            for (int i = 0; i < n; i++) {
+                indices[i] = (n - 1) - i;
+            }
+        }
 
-            double cross = vector1.cross(vector2);
+        int count = 2 * n;
+        int v = n - 1;
+        while (n > 2) {
+            if ((count--) <= 0) return;
 
-            Triangle triangle = new Triangle(vertex1, vertex2, vertex3);
+            int u = v;
+            if (n <= u) u = 0;
+            v = u + 1;
+            if (n <= v) v = 0;
+            int w = v + 1;
+            if (n <= w) w = 0;
 
-            if ((!wayToGo && cross >= 0) || (wayToGo && cross <= 0)) {
-                if (validTriangle(triangle, vertexes)) {
-                    vertexes.remove(Math.abs((index + 1) % vertexes.size()));
-                    polygon.addTriangle(triangle);
-                    index = 0;
-                } else ++index;
-            } else ++index;
+            if (snip(polygon, u, v, w, n, indices)) {
+                int a = indices[u];
+                int b = indices[v];
+                int c = indices[w];
+                polygon.addTriangle(new Triangle(polygon.getVertexes().get(a), polygon.getVertexes().get(b), polygon.getVertexes().get(c)));
+                for (int s = v, t = v + 1; t < n; s++, t++) {
+                    indices[s] = indices[t];
+                }
+                n--;
+                count = 2 * n;
+            }
         }
     }
 
-    private static boolean validTriangle(Triangle triangle, List<Vertex> vertexes) {
-        for (Vertex vertex : vertexes) {
-            if (vertex != triangle.getVertex1() && vertex != triangle.getVertex2() && vertex != triangle.getVertex3()
-                    && triangle.checkIfVertexIsInside(vertex))
-                return false;
+    private static double area(Polygon polygon) {
+        int n = polygon.getVertexes().size();
+        double A = 0.0;
+        for (int p = n - 1, q = 0; q < n; p = q++) {
+            Vertex pval = polygon.getVertexes().get(p);
+            Vertex qval = polygon.getVertexes().get(q);
+            A += pval.getX() * qval.getY() - qval.getX() * pval.getY();
+        }
+        return (A * 0.5);
+    }
+
+    private static boolean snip(Polygon polygon, int u, int v, int w, int n, int[] indices) {
+        Vertex A = polygon.getVertexes().get(indices[u]);
+        Vertex B = polygon.getVertexes().get(indices[v]);
+        Vertex C = polygon.getVertexes().get(indices[w]);
+        if (1.0E-10 > (((B.getX() - A.getX()) * (C.getY() - A.getY())) - ((B.getY() - A.getY()) * (C.getX() - A.getX())))) return false;
+        for (int p = 0; p < n; p++) {
+            if ((p == u) || (p == v) || (p == w)) continue;
+            if (new Triangle(A, B, C).checkIfVertexIsInside(polygon.getVertexes().get(indices[p]))) return false;
         }
         return true;
-    }
-
-    public static boolean wayToGo(List<Vertex> vertexes) {
-        double sum = 0;
-        for (int i = 0; i < vertexes.size(); i++) {
-            Vertex vertex1 = vertexes.get(i);
-            Vertex vertex2 = vertexes.get((i + 1) % vertexes.size());
-            sum += (vertex2.getX() - vertex1.getX()) * (vertex2.getY() + vertex1.getY());
-        }
-        return sum >= 0;
     }
 }

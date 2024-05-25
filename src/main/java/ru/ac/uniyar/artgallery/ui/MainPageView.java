@@ -56,18 +56,18 @@ public class MainPageView extends VerticalLayout {
             if (camVisibilityField != null) {
                 logger.info("is not null");
                 camVisibilityFields.add(camVisibilityField);
-//                logger.info("started triangulation");
-//                Triangulation.invoke(camVisibilityField);
-//                logger.info("ended triangulation");
+                logger.info("started triangulation");
+                Triangulation.invoke(camVisibilityField);
+                logger.info("ended triangulation");
                 drawCamVisibilityField(canvas.getContext(), camVisibilityField);
                 drawCameras(canvas.getContext(), polygon.getCameras());
             }
 
-//            if (polygon.isFullyCovered(camVisibilityFields)) {
-//                //todo add statistics, show autosolving, compare and give points
-//                Text endOfLevel = new Text("Level is finished! Let's move to the next one");
-//                add(endOfLevel);
-//            }
+            if (polygon.isFullyCovered(camVisibilityFields)) {
+                //todo add statistics, show autosolving, compare and give points
+                Text endOfLevel = new Text("Level is finished! Let's move to the next one");
+                add(endOfLevel);
+            }
         });
 
         createPolygon();
@@ -162,14 +162,14 @@ public class MainPageView extends VerticalLayout {
 
 
         //раскомментить для отображения триангуляции
-//        CanvasRenderingContext2D context = canvas.getContext();
-//        for (Triangle triangle : polygon.getTriangles()) {
-//            for (Line line : triangle.getListOfLines()) {
-//                context.setStrokeStyle("black");
-//                context.moveTo(line.getStart().getX(), line.getStart().getY());
-//                context.lineTo(line.getEnd().getX(), line.getEnd().getY());
-//                context.stroke();
-//            }
-//        }
+        CanvasRenderingContext2D context = canvas.getContext();
+        for (Triangle triangle : polygon.getTriangles()) {
+            for (Line line : triangle.getListOfLines()) {
+                context.setStrokeStyle("black");
+                context.moveTo(line.getStart().getX(), line.getStart().getY());
+                context.lineTo(line.getEnd().getX(), line.getEnd().getY());
+                context.stroke();
+            }
+        }
     }
 }
