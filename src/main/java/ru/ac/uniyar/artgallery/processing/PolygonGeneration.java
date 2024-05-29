@@ -39,8 +39,27 @@ public class PolygonGeneration {
         Vertex c = new Vertex(Math.random() * width, Math.random() * height);
 
         if ((new Triangle(a, b, c)).isValid()) {
-            segments.addAll(Arrays.asList(new Line(a, b), new Line(b, c), new Line(c, a)));
+            Line ab = new Line(a, b);
+            Line bc = new Line(b, c);
+            Line ca = new Line(c, a);
+            if (checkCoefficient(ab,  bc, ca)) {
+                generateTriangle();
+            } else {
+                segments.addAll(Arrays.asList(ab, bc, ca));
+            }
         } else generateTriangle();
+    }
+
+    private static boolean checkCoefficient(Line a, Line b, Line c) {
+        if (a.getLength() / b.getLength() > 1 || b.getLength() / c.getLength() > 1 || a.getLength() / c.getLength() > 1)
+            return false;
+        return createCoefficient(a, b, c) >= 1.1 && createCoefficient(a, b, c) <= 3.5 &&
+                createCoefficient(b, c, a) >= 1.1 && createCoefficient(b, c, a) <= 3.5 &&
+                createCoefficient(c, b, a) >= 1.1 && createCoefficient(c, b, a) <= 3.5;
+    }
+
+    private static double createCoefficient(Line a, Line b, Line c) {
+        return (a.getLength() + b.getLength()) / c.getLength();
     }
 
     private static void addPoint() {
@@ -68,12 +87,16 @@ public class PolygonGeneration {
             for (Line line : linesWithV1) {
                 if ((line.getEnd().isEqualTo(v1) && new Line(line.getStart(), randomVertex).canBeDrawn(segments)) ||
                         (line.getStart().isEqualTo(v1) && new Line(randomVertex, line.getEnd()).canBeDrawn(segments))) {
-                    int segmentId = segments.indexOf(line);
-                    segments.remove(line);
-                    segments.add(segmentId, new Line(line.getStart(), randomVertex));
-                    segments.add(segmentId + 1, new Line(randomVertex, line.getEnd()));
-                    toBreak = true;
-                    break;
+                    Line startRandom = new Line(line.getStart(), randomVertex);
+                    Line randomEnd = new Line(randomVertex, line.getEnd());
+                    if (checkCoefficient(startRandom, randomEnd, line)) {
+                        int segmentId = segments.indexOf(line);
+                        segments.remove(line);
+                        segments.add(segmentId, startRandom);
+                        segments.add(segmentId + 1, randomEnd);
+                        toBreak = true;
+                        break;
+                    }
                 }
             }
             if (toBreak)

@@ -18,10 +18,6 @@ public class Triangle {
     private Vertex vertex2;
     private Vertex vertex3;
 
-    public boolean hasVertex(Vertex v) {
-        return vertex1.isEqualTo(v) || vertex2.isEqualTo(v) || vertex3.isEqualTo(v);
-    }
-
     public double getField() {
         double a = new Line(vertex1, vertex2).getLength();
         double b = new Line(vertex2, vertex3).getLength();

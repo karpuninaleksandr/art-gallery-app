@@ -33,30 +33,25 @@ public class AutoSolving {
         if (check == null) return reds;
 
         while (done.size() < trianglesToCheck.size()) {
-            logger.info("index: " + index);
             if (!done.contains(check)) done.add(check);
             if (!paintTriangle(reds, greens, blues, check.getVertex1(), check.getVertex2(), check.getVertex3())) {
                 int curr = done.indexOf(check);
                 check = getNextTriangleToCheck(check, trianglesToCheck, done);
                 if (check == null) {
-                    logger.info("moving backwards to index: " + (index - 1));
                     if (index == 0) break;
                     check = done.get(index);
                     --index;
                 } else {
                     index = curr;
-                    logger.info("moving forward to index: " + index);
                 }
             } else {
                 check = getNextTriangleToCheck(check, trianglesToCheck, done);
                 if (check == null) {
-                    logger.info("moving backwards to index: " + (index - 1));
                     if (index == 0) break;
                     check = done.get(index);
                     --index;
                 } else {
                     index = done.size() - 1;
-                    logger.info("moving forward to index: " + index);
                 }
             }
         }

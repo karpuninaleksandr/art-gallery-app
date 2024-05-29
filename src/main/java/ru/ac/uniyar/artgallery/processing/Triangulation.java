@@ -35,7 +35,7 @@ public class Triangulation {
             int w = v + 1;
             if (n <= w) w = 0;
 
-            if (snip(polygon, u, v, w, n, indices)) {
+            if (canBeCut(polygon, u, v, w, n, indices)) {
                 int a = indices[u];
                 int b = indices[v];
                 int c = indices[w];
@@ -60,7 +60,7 @@ public class Triangulation {
         return (A * 0.5);
     }
 
-    private static boolean snip(Polygon polygon, int u, int v, int w, int n, int[] indices) {
+    private static boolean canBeCut(Polygon polygon, int u, int v, int w, int n, int[] indices) {
         Vertex A = polygon.getVertexes().get(indices[u]);
         Vertex B = polygon.getVertexes().get(indices[v]);
         Vertex C = polygon.getVertexes().get(indices[w]);

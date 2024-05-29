@@ -19,6 +19,7 @@ import ru.ac.uniyar.artgallery.processing.Triangulation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @PreserveOnRefresh
@@ -37,18 +38,29 @@ public class MainPageView extends VerticalLayout {
 
     private Canvas canvas;
 
+    private int level;
+    private double points;
+
     public MainPageView(@Value("${canvas.height}") int height, @Value("${canvas.width}") int width) {
         logger.info("main page initialization");
 
         this.canvasHeight = height;
         this.canvasWidth = width;
 
+        this.level = 4;
+        this.points = 0;
+
         init();
     }
 
     public void init() {
+        ++level;
+
         removeAll();
         canvas = new Canvas(canvasWidth, canvasHeight);
+
+        Text pointsText = new Text(String.format("You have %s points!", points));
+        AtomicBoolean autoSolved = new AtomicBoolean(false);
 
         canvas.addMouseClickListener(it -> {
             logger.info("clicked on " + it.getOffsetX() + " " + it.getOffsetY());
@@ -59,13 +71,19 @@ public class MainPageView extends VerticalLayout {
                 logger.info("started triangulation");
                 Triangulation.invoke(camVisibilityField);
                 logger.info("ended triangulation");
-                drawCamVisibilityField(canvas.getContext(), camVisibilityField);
+                drawCamVisibilityField(canvas.getContext(), camVisibilityField, "green");
                 drawCameras(canvas.getContext(), polygon.getCameras());
             }
 
             if (polygon.isFullyCovered(camVisibilityFields)) {
-                //todo add statistics, show autosolving, compare and give points
                 Text endOfLevel = new Text("Level is finished! Let's move to the next one");
+                if (!autoSolved.get()) {
+                    int auto = AutoSolving.invoke(polygon).size();
+                    if (auto >= polygon.getCameras().size()) {
+                        points += (auto - polygon.getCameras().size() + 1) * 100 * (1 + ((double) (level - 5)) / 100);
+                        pointsText.setText(String.format("You have %s points!", points));
+                    }
+                }
                 add(endOfLevel);
             }
         });
@@ -80,27 +98,20 @@ public class MainPageView extends VerticalLayout {
         autoSolve.addClickListener(it -> {
             List<Vertex> cameras = AutoSolving.invoke(polygon);
             drawCameras(canvas.getContext(), cameras);
+            autoSolved.set(true);
         });
-        //todo if "SOLVE" button was pushed flag is needed to check that user did not solve task by himself,
-        // of course no points are given in that situation
 
-
-        add(refresh, autoSolve, canvas);
+        add(refresh, autoSolve, pointsText, canvas);
     }
 
     public void addWalls(CanvasRenderingContext2D context) {
         logger.info("adding walls");
-        for (Line line : polygon.getLines()) {
-            context.setStrokeStyle("black");
-            context.moveTo(line.getStart().getX(), line.getStart().getY());
-            context.lineTo(line.getEnd().getX(), line.getEnd().getY());
-            context.stroke();
-        }
+        drawCamVisibilityField(context, polygon, "red");
     }
 
-    public void drawCamVisibilityField(CanvasRenderingContext2D context, Polygon field) {
+    public void drawCamVisibilityField(CanvasRenderingContext2D context, Polygon field, String color) {
         context.moveTo(field.getVertexes().get(0).getX(), field.getVertexes().get(0).getY());
-        context.setFillStyle("green");
+        context.setFillStyle(color);
         context.beginPath();
 
         for (Vertex vertex : field.getVertexes()) {
@@ -114,7 +125,7 @@ public class MainPageView extends VerticalLayout {
 
     public void drawCameras(CanvasRenderingContext2D context, List<Vertex> cameras) {
         for (Vertex camera : cameras) {
-            context.setFillStyle("red");
+            context.setFillStyle("black");
             context.fillRect(camera.getX(), camera.getY(), 4, 4);
         }
     }
@@ -126,13 +137,13 @@ public class MainPageView extends VerticalLayout {
 
 //        polygon = new Polygon();
 //        polygon.addVertexes(List.of(
-//                new Vertex(695.5581175986968,130.0403855826727),
-//                new Vertex(790.5483075402233,381.9220578203906),
-//                new Vertex(927.8144094413664,605.0986196880497),
-//                new Vertex(737.1279304457148,220.97031305547657),
-//                new Vertex(819.1460791721355,212.27462325308807),
-//                new Vertex(993.2119411835444,277.2947523227727),
-//                new Vertex(972.8666537831008,44.63558420247373),
+//                new Vertex(886.6090037617421,166.68579670516175),
+//                new Vertex(891.0504515039829,641.3138984515487),
+//                new Vertex(260.9452077759111,692.2727341295405),
+//                new Vertex(535.0749634526961,655.19205169337),
+//                new Vertex(367.8615169290765,365.09512961265125),
+//                new Vertex(191.39542998619174,162.19611518864028),
+//                new Vertex(531.1834292564066,25.82542784544637)
 //                new Vertex(932.2465585713729,242.6982989178366),
 //                new Vertex(626.9840423723022,83.84466514479922),
 //                new Vertex(351.67026580693084,228.8566923805847),
@@ -148,7 +159,7 @@ public class MainPageView extends VerticalLayout {
 //                new Vertex(556.5700875590073,418.7508164052168)
 //        ));
 
-        polygon = PolygonGeneration.invoke(20, canvasHeight, canvasWidth);
+        polygon = PolygonGeneration.invoke(level, canvasHeight, canvasWidth);
         polygon.clearCams();
 
         Triangulation.invoke(polygon);
@@ -162,14 +173,14 @@ public class MainPageView extends VerticalLayout {
 
 
         //раскомментить для отображения триангуляции
-        CanvasRenderingContext2D context = canvas.getContext();
-        for (Triangle triangle : polygon.getTriangles()) {
-            for (Line line : triangle.getListOfLines()) {
-                context.setStrokeStyle("black");
-                context.moveTo(line.getStart().getX(), line.getStart().getY());
-                context.lineTo(line.getEnd().getX(), line.getEnd().getY());
-                context.stroke();
-            }
-        }
+//        CanvasRenderingContext2D context = canvas.getContext();
+//        for (Triangle triangle : polygon.getTriangles()) {
+//            for (Line line : triangle.getListOfLines()) {
+//                context.setStrokeStyle("black");
+//                context.moveTo(line.getStart().getX(), line.getStart().getY());
+//                context.lineTo(line.getEnd().getX(), line.getEnd().getY());
+//                context.stroke();
+//            }
+//        }
     }
 }
