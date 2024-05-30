@@ -53,9 +53,9 @@ public class PolygonGeneration {
     private static boolean checkCoefficient(Line a, Line b, Line c) {
         if (a.getLength() / b.getLength() > 1 || b.getLength() / c.getLength() > 1 || a.getLength() / c.getLength() > 1)
             return false;
-        return createCoefficient(a, b, c) >= 1.1 && createCoefficient(a, b, c) <= 3.5 &&
-                createCoefficient(b, c, a) >= 1.1 && createCoefficient(b, c, a) <= 3.5 &&
-                createCoefficient(c, b, a) >= 1.1 && createCoefficient(c, b, a) <= 3.5;
+        return createCoefficient(a, b, c) >= 0.3 && createCoefficient(a, b, c) <= 2.8 &&
+                createCoefficient(b, c, a) >= 0.3 && createCoefficient(b, c, a) <= 2.8 &&
+                createCoefficient(c, b, a) >= 0.3 && createCoefficient(c, b, a) <= 2.8;
     }
 
     private static double createCoefficient(Line a, Line b, Line c) {

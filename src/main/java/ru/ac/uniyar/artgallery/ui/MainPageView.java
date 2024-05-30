@@ -59,7 +59,11 @@ public class MainPageView extends VerticalLayout {
         removeAll();
         canvas = new Canvas(canvasWidth, canvasHeight);
 
-        Text pointsText = new Text(String.format("You have %s points!", points));
+        Text pointsText = new Text(String.format("У Вас %s очков!", points));
+        Text levelEnded = new Text("");
+        Text levelNumber = new Text("Уровень №" + (level - 4));
+        AtomicBoolean ended = new AtomicBoolean(false);
+        Text levelStatistics = new Text("");
         AtomicBoolean autoSolved = new AtomicBoolean(false);
 
         canvas.addMouseClickListener(it -> {
@@ -75,33 +79,37 @@ public class MainPageView extends VerticalLayout {
                 drawCameras(canvas.getContext(), polygon.getCameras());
             }
 
-            if (polygon.isFullyCovered(camVisibilityFields)) {
-                Text endOfLevel = new Text("Level is finished! Let's move to the next one");
+            if (polygon.isFullyCovered(camVisibilityFields) && !ended.get()) {
+                ended.set(true);
+                levelEnded.setText("Уровень пройден!");
+                int auto = AutoSolving.invoke(polygon).size();
+                levelStatistics.setText("Вы использовали следуюшее количество камер: " + camVisibilityFields.size() + ". " +
+                        "Автоматическое решение использует " + auto + ".");
                 if (!autoSolved.get()) {
-                    int auto = AutoSolving.invoke(polygon).size();
                     if (auto >= polygon.getCameras().size()) {
-                        points += (auto - polygon.getCameras().size() + 1) * 100 * (1 + ((double) (level - 5)) / 100);
-                        pointsText.setText(String.format("You have %s points!", points));
+                        points += 100 + (auto - polygon.getCameras().size()) * 100 * (1 + ((double) (level - 5)) / 100);
+                    } else {
+                        points += 100;
                     }
+                    pointsText.setText(String.format("У Вас %s очков!", points));
                 }
-                add(endOfLevel);
             }
         });
 
         createPolygon();
         addWalls(canvas.getContext());
 
-        Button refresh = new Button("NEXT LEVEL");
+        Button refresh = new Button("Перейти к следующему уровню");
         refresh.addClickListener(it -> init());
 
-        Button autoSolve = new Button("SOLVE");
+        Button autoSolve = new Button("Решить уровень");
         autoSolve.addClickListener(it -> {
             List<Vertex> cameras = AutoSolving.invoke(polygon);
             drawCameras(canvas.getContext(), cameras);
             autoSolved.set(true);
         });
 
-        add(refresh, autoSolve, pointsText, canvas);
+        add(refresh, autoSolve, levelNumber, pointsText, levelEnded, levelStatistics, canvas);
     }
 
     public void addWalls(CanvasRenderingContext2D context) {

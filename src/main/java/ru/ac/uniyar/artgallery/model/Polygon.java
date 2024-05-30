@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 public class Polygon {
-    private final double eps = 0.05;
+    private final double eps = 1;
 
     private final ArrayList<Vertex> vertexes = new ArrayList<>();
 
