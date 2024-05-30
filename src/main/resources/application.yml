@@ -1,6 +1,6 @@
 canvas:
-  height: 700
-  width: 1000
+  height: 500
+  width: 800
 
 server:
   port: 8080

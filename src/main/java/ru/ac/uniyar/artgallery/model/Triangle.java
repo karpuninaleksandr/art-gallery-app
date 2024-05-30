@@ -12,7 +12,7 @@ import java.util.ArrayList;
 @Getter
 @Setter
 public class Triangle {
-    private final double eps = 0.00000001;
+    private final double eps = 0.005;
 
     private Vertex vertex1;
     private Vertex vertex2;

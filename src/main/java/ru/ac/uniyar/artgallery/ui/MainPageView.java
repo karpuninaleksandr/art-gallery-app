@@ -2,6 +2,7 @@ package ru.ac.uniyar.artgallery.ui;
 
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.router.Route;
@@ -58,13 +59,31 @@ public class MainPageView extends VerticalLayout {
 
         removeAll();
         canvas = new Canvas(canvasWidth, canvasHeight);
+        Text top = new Text("Охрана картинной галереи");
 
-        Text pointsText = new Text(String.format("У Вас %s очков!", points));
+        Text pointsText = new Text(String.format("У Вас %s очков!", (int) points));
         Text levelEnded = new Text("");
         Text levelNumber = new Text("Уровень №" + (level - 4));
         AtomicBoolean ended = new AtomicBoolean(false);
         Text levelStatistics = new Text("");
+        Text autoStatistics = new Text("");
         AtomicBoolean autoSolved = new AtomicBoolean(false);
+
+        Div startStatistics = new Div();
+        Div topDiv = new Div(top);
+        topDiv.getStyle().set("font-size", "30px");
+        topDiv.getStyle().set("margin-bottom", "30px");
+        Div levelNumberDiv = new Div(levelNumber);
+        levelNumberDiv.getStyle().set("font-weight", "bold");
+        startStatistics.add(topDiv, levelNumberDiv, new Div(pointsText));
+        startStatistics.getStyle().set("text-align", "center");
+
+        Div endStatistics = new Div();
+        Div levelEndedDiv = new Div(levelEnded);
+        levelEndedDiv.getStyle().set("font-weight", "bold");
+        endStatistics.add(levelEndedDiv, new Div(levelStatistics), new Div(autoStatistics));
+        endStatistics.getStyle().set("text-align", "center");
+        endStatistics.getStyle().set("margin-top", "20px");
 
         canvas.addMouseClickListener(it -> {
             logger.info("clicked on " + it.getOffsetX() + " " + it.getOffsetY());
@@ -83,24 +102,26 @@ public class MainPageView extends VerticalLayout {
                 ended.set(true);
                 levelEnded.setText("Уровень пройден!");
                 int auto = AutoSolving.invoke(polygon).size();
-                levelStatistics.setText("Вы использовали следуюшее количество камер: " + camVisibilityFields.size() + ". " +
-                        "Автоматическое решение использует " + auto + ".");
+                levelStatistics.setText("Вы использовали следуюшее количество камер: " + camVisibilityFields.size() + ".");
+                autoStatistics.setText("Автоматическое решение использует " + auto + ".");
                 if (!autoSolved.get()) {
                     if (auto >= polygon.getCameras().size()) {
                         points += 100 + (auto - polygon.getCameras().size()) * 100 * (1 + ((double) (level - 5)) / 100);
                     } else {
                         points += 100;
                     }
-                    pointsText.setText(String.format("У Вас %s очков!", points));
+                    pointsText.setText(String.format("У Вас %s очков!", (int) points));
                 }
             }
         });
 
+        canvas.getStyle().set("border-style", "solid");
+
         createPolygon();
         addWalls(canvas.getContext());
 
-        Button refresh = new Button("Перейти к следующему уровню");
-        refresh.addClickListener(it -> init());
+        Button next = new Button("Перейти к следующему уровню");
+        next.addClickListener(it -> init());
 
         Button autoSolve = new Button("Решить уровень");
         autoSolve.addClickListener(it -> {
@@ -108,8 +129,24 @@ public class MainPageView extends VerticalLayout {
             drawCameras(canvas.getContext(), cameras);
             autoSolved.set(true);
         });
+        autoSolve.getStyle().set("margin-right", "20px");
 
-        add(refresh, autoSolve, levelNumber, pointsText, levelEnded, levelStatistics, canvas);
+        Div buttons = new Div();
+        buttons.add(autoSolve, next);
+        buttons.getStyle().set("display", "flex");
+        buttons.getStyle().set("justify-content", "center");
+        buttons.getStyle().set("margin-top", "20px");
+
+        Div canvasDiv = new Div(canvas);
+        canvasDiv.getStyle().set("display", "flex");
+        canvasDiv.getStyle().set("justify-content", "center");
+        canvasDiv.getStyle().set("margin-top", "20px");
+
+        Div formLayout = new Div();
+        formLayout.add(startStatistics, canvasDiv, endStatistics, buttons);
+        formLayout.getStyle().set("width", "100%");
+
+        add(formLayout);
     }
 
     public void addWalls(CanvasRenderingContext2D context) {
