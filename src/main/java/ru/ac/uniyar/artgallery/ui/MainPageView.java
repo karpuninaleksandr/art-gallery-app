@@ -152,6 +152,24 @@ public class MainPageView extends VerticalLayout {
     public void addWalls(CanvasRenderingContext2D context) {
         logger.info("adding walls");
         drawCamVisibilityField(context, polygon, "red");
+
+//        раскомментить для отображения триангуляции
+//        CanvasRenderingContext2D context = canvas.getContext();
+//        for (Triangle triangle : polygon.getTriangles()) {
+//            for (Line line : triangle.getListOfLines()) {
+//                context.setStrokeStyle("black");
+//                context.moveTo(line.getStart().getX(), line.getStart().getY());
+//                context.lineTo(line.getEnd().getX(), line.getEnd().getY());
+//                context.stroke();
+//            }
+//        }
+
+        //раскомментить для логирования сгенерированного полигона
+//        logger.info("generated polygon: \n");
+//        for (Line line : polygon.getLines()) {
+//            logger.info("line from (" + line.getStart().getX() + "," + line.getStart().getY()
+//                    + ") to (" + line.getEnd().getX() + "," + line.getEnd().getY() + ")");
+//        }
     }
 
     public void drawCamVisibilityField(CanvasRenderingContext2D context, Polygon field, String color) {
@@ -180,52 +198,9 @@ public class MainPageView extends VerticalLayout {
 
         camVisibilityFields = new ArrayList<>();
 
-//        polygon = new Polygon();
-//        polygon.addVertexes(List.of(
-//                new Vertex(886.6090037617421,166.68579670516175),
-//                new Vertex(891.0504515039829,641.3138984515487),
-//                new Vertex(260.9452077759111,692.2727341295405),
-//                new Vertex(535.0749634526961,655.19205169337),
-//                new Vertex(367.8615169290765,365.09512961265125),
-//                new Vertex(191.39542998619174,162.19611518864028),
-//                new Vertex(531.1834292564066,25.82542784544637)
-//                new Vertex(932.2465585713729,242.6982989178366),
-//                new Vertex(626.9840423723022,83.84466514479922),
-//                new Vertex(351.67026580693084,228.8566923805847),
-//                new Vertex(552.1604920325107,202.61444716391918),
-//                new Vertex(19.33015932779092,616.1884610322708),
-//                new Vertex(361.87827024581475,436.54720066452046),
-//                new Vertex(363.84640731855256,562.8331569692725),
-//                new Vertex(262.5856324001448,623.6466830987562),
-//                new Vertex(184.64201900710864,687.9319585990779),
-//                new Vertex(594.732860251488,603.7142679249515),
-//                new Vertex(545.8448834607615,548.8699215737292),
-//                new Vertex(483.95349613553384,475.9176434808329),
-//                new Vertex(556.5700875590073,418.7508164052168)
-//        ));
-
         polygon = PolygonGeneration.invoke(level, canvasHeight, canvasWidth);
         polygon.clearCams();
 
         Triangulation.invoke(polygon);
-
-        //раскомментить для логирования сгенерированного полигона
-//        logger.info("generated polygon: \n");
-//        for (Line line : polygon.getLines()) {
-//            logger.info("line from (" + line.getStart().getX() + "," + line.getStart().getY()
-//                    + ") to (" + line.getEnd().getX() + "," + line.getEnd().getY() + ")");
-//        }
-
-
-        //раскомментить для отображения триангуляции
-//        CanvasRenderingContext2D context = canvas.getContext();
-//        for (Triangle triangle : polygon.getTriangles()) {
-//            for (Line line : triangle.getListOfLines()) {
-//                context.setStrokeStyle("black");
-//                context.moveTo(line.getStart().getX(), line.getStart().getY());
-//                context.lineTo(line.getEnd().getX(), line.getEnd().getY());
-//                context.stroke();
-//            }
-//        }
     }
 }

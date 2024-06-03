@@ -51,11 +51,8 @@ public class PolygonGeneration {
     }
 
     private static boolean checkCoefficient(Line a, Line b, Line c) {
-        if (a.getLength() / b.getLength() > 1 || b.getLength() / c.getLength() > 1 || a.getLength() / c.getLength() > 1)
-            return false;
-        return createCoefficient(a, b, c) >= 0.3 && createCoefficient(a, b, c) <= 2.8 &&
-                createCoefficient(b, c, a) >= 0.3 && createCoefficient(b, c, a) <= 2.8 &&
-                createCoefficient(c, b, a) >= 0.3 && createCoefficient(c, b, a) <= 2.8;
+        System.out.println(createCoefficient(a, b, c) + " " + createCoefficient(b, c, a) + " " + createCoefficient(c, a, b));
+        return createCoefficient(a, b, c) >= 1.05 && createCoefficient(b, c, a) >= 1.05 && createCoefficient(c, a, b) >= 1.05;
     }
 
     private static double createCoefficient(Line a, Line b, Line c) {
@@ -91,11 +88,18 @@ public class PolygonGeneration {
                     Line randomEnd = new Line(randomVertex, line.getEnd());
                     if (checkCoefficient(startRandom, randomEnd, line)) {
                         int segmentId = segments.indexOf(line);
-                        segments.remove(line);
-                        segments.add(segmentId, startRandom);
-                        segments.add(segmentId + 1, randomEnd);
-                        toBreak = true;
-                        break;
+                        int prevId = segmentId == 0 ? segments.size() - 1 : segmentId - 1;
+                        int nextId = segmentId == segments.size() - 1 ? 0 : segmentId + 1;
+                        Line prevSegment = segments.get(prevId);
+                        Line nextSegment = segments.get(nextId);
+                        if (checkCoefficient(prevSegment, startRandom, new Line(prevSegment.getStart(), randomVertex)) &&
+                                checkCoefficient(nextSegment, randomEnd, new Line(nextSegment.getEnd(), randomVertex))) {
+                            segments.remove(line);
+                            segments.add(segmentId, startRandom);
+                            segments.add(segmentId + 1, randomEnd);
+                            toBreak = true;
+                            break;
+                        }
                     }
                 }
             }
