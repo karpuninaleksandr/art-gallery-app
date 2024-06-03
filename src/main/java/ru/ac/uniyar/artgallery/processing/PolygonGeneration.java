@@ -51,7 +51,6 @@ public class PolygonGeneration {
     }
 
     private static boolean checkCoefficient(Line a, Line b, Line c) {
-        System.out.println(createCoefficient(a, b, c) + " " + createCoefficient(b, c, a) + " " + createCoefficient(c, a, b));
         return createCoefficient(a, b, c) >= 1.05 && createCoefficient(b, c, a) >= 1.05 && createCoefficient(c, a, b) >= 1.05;
     }
 

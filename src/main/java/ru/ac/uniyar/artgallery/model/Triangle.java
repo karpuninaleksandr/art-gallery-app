@@ -28,12 +28,21 @@ public class Triangle {
     }
 
     public boolean checkIfVertexIsInside(Vertex checkVertex) {
+        //85, 268  36, 418
+        if (getListOfLines().stream().anyMatch(it -> it.checkIfContainsVertex(checkVertex)))
+            return true;
+
         Triangle smallTriangle1 = new Triangle(checkVertex, this.getVertex1(), this.getVertex2());
         Triangle smallTriangle2 = new Triangle(checkVertex, this.getVertex2(), this.getVertex3());
         Triangle smallTriangle3 = new Triangle(checkVertex, this.getVertex1(), this.getVertex3());
 
-        return Math.abs(this.getField() -
-                (smallTriangle2.getField() + smallTriangle1.getField() + smallTriangle3.getField())) < eps;
+        double sumOfFields = (Double.isNaN(smallTriangle2.getField()) ? 0 : smallTriangle2.getField()) +
+                (Double.isNaN(smallTriangle1.getField()) ? 0 : smallTriangle1.getField()) +
+                (Double.isNaN(smallTriangle3.getField()) ? 0 : smallTriangle3.getField());
+        double field = this.getField();
+        double eps = field >= sumOfFields ? field * 0.005 : sumOfFields * 0.005;
+
+        return Math.abs(field - sumOfFields) < eps || Double.isNaN(Math.abs(field - sumOfFields));
     }
 
     public ArrayList<Line> getListOfLines() {

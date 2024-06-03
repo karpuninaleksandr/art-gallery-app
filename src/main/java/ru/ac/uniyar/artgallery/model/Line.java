@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -15,7 +16,7 @@ public class Line {
     private Vertex start;
     private Vertex end;
 
-    private final double eps = 0.005;
+    private final double eps = 0.01;
 
     public boolean crosses(Line line) {
         Vertex crossVertex = getLinesCrossVertex(line);
@@ -142,4 +143,21 @@ public class Line {
         return checkIfVertexIsOnTheLine(start, end, check);
     }
 
+    public List<Vertex> getAsListOfDots() {
+        List<Vertex> dots = new ArrayList<>();
+        double xDiff = end.getX() - start.getX(), yDiff = end.getY() - start.getY(),
+                xCurrent = start.getX(), yCurrent = start.getY();
+        boolean end = false;
+        while (!end) {
+            Vertex newDot = new Vertex(xCurrent, yCurrent);
+            if (!checkIfContainsVertex(newDot)) {
+                end = true;
+            } else {
+                dots.add(newDot);
+                xCurrent += (xDiff / 75);
+                yCurrent += (yDiff / 75);
+            }
+        }
+        return dots;
+    }
 }

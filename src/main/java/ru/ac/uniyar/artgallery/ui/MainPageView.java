@@ -154,7 +154,6 @@ public class MainPageView extends VerticalLayout {
         drawCamVisibilityField(context, polygon, "red");
 
 //        раскомментить для отображения триангуляции
-//        CanvasRenderingContext2D context = canvas.getContext();
 //        for (Triangle triangle : polygon.getTriangles()) {
 //            for (Line line : triangle.getListOfLines()) {
 //                context.setStrokeStyle("black");
@@ -163,7 +162,6 @@ public class MainPageView extends VerticalLayout {
 //                context.stroke();
 //            }
 //        }
-
         //раскомментить для логирования сгенерированного полигона
 //        logger.info("generated polygon: \n");
 //        for (Line line : polygon.getLines()) {
@@ -200,6 +198,10 @@ public class MainPageView extends VerticalLayout {
 
         polygon = PolygonGeneration.invoke(level, canvasHeight, canvasWidth);
         polygon.clearCams();
+
+        for (Vertex vertex : polygon.getVertexes()) {
+            System.out.println("new Vertex(" + vertex.getX() + "," + vertex.getY() + "),");
+        }
 
         Triangulation.invoke(polygon);
     }
