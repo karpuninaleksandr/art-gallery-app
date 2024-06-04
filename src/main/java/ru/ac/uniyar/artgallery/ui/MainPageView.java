@@ -94,7 +94,7 @@ public class MainPageView extends VerticalLayout {
                 logger.info("started triangulation");
                 Triangulation.invoke(camVisibilityField);
                 logger.info("ended triangulation");
-                drawCamVisibilityField(canvas.getContext(), camVisibilityField, "green");
+                drawCamVisibilityField(canvas.getContext(), camVisibilityField, "#37DD6F");
                 drawCameras(canvas.getContext(), polygon.getCameras());
             }
 
@@ -118,7 +118,7 @@ public class MainPageView extends VerticalLayout {
         canvas.getStyle().set("border-style", "solid");
 
         createPolygon();
-        addWalls(canvas.getContext());
+        drawPolygon(canvas.getContext());
 
         Button next = new Button("Перейти к следующему уровню");
         next.addClickListener(it -> init());
@@ -149,9 +149,10 @@ public class MainPageView extends VerticalLayout {
         add(formLayout);
     }
 
-    public void addWalls(CanvasRenderingContext2D context) {
-        logger.info("adding walls");
-        drawCamVisibilityField(context, polygon, "red");
+    public void drawPolygon(CanvasRenderingContext2D context) {
+        logger.info("drawing polygon");
+        drawCamVisibilityField(context, polygon, "#FF5D40");
+        drawWalls(context);
 
 //        раскомментить для отображения триангуляции
 //        for (Triangle triangle : polygon.getTriangles()) {
@@ -168,6 +169,15 @@ public class MainPageView extends VerticalLayout {
 //            logger.info("line from (" + line.getStart().getX() + "," + line.getStart().getY()
 //                    + ") to (" + line.getEnd().getX() + "," + line.getEnd().getY() + ")");
 //        }
+    }
+
+    public void drawWalls(CanvasRenderingContext2D context) {
+        for (Line wall : polygon.getLines()) {
+            context.setStrokeStyle("black");
+            context.moveTo(wall.getStart().getX(), wall.getStart().getY());
+            context.lineTo(wall.getEnd().getX(), wall.getEnd().getY());
+            context.stroke();
+        }
     }
 
     public void drawCamVisibilityField(CanvasRenderingContext2D context, Polygon field, String color) {
