@@ -40,7 +40,7 @@ public class Triangle {
                 (Double.isNaN(smallTriangle1.getField()) ? 0 : smallTriangle1.getField()) +
                 (Double.isNaN(smallTriangle3.getField()) ? 0 : smallTriangle3.getField());
         double field = this.getField();
-        double eps = field >= sumOfFields ? field * 0.005 : sumOfFields * 0.005;
+        double eps = field >= sumOfFields ? field * 0.001 : sumOfFields * 0.001;
 
         return Math.abs(field - sumOfFields) < eps || Double.isNaN(Math.abs(field - sumOfFields));
     }

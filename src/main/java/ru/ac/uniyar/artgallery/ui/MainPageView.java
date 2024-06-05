@@ -94,8 +94,9 @@ public class MainPageView extends VerticalLayout {
                 logger.info("started triangulation");
                 Triangulation.invoke(camVisibilityField);
                 logger.info("ended triangulation");
-                drawCamVisibilityField(canvas.getContext(), camVisibilityField, "#37DD6F");
-                drawCameras(canvas.getContext(), polygon.getCameras());
+                drawCamVisibilityField(canvas.getContext(), camVisibilityField,
+                        getCamVisibilityColor(polygon.getCameras().size() - 1));
+                drawCameras(canvas.getContext(), polygon.getCameras(), "black");
             }
 
             if (polygon.isFullyCovered(camVisibilityFields) && !ended.get()) {
@@ -126,7 +127,7 @@ public class MainPageView extends VerticalLayout {
         Button autoSolve = new Button("Решить уровень");
         autoSolve.addClickListener(it -> {
             List<Vertex> cameras = AutoSolving.invoke(polygon);
-            drawCameras(canvas.getContext(), cameras);
+            drawCameras(canvas.getContext(), cameras, "#FFD500");
             autoSolved.set(true);
         });
         autoSolve.getStyle().set("margin-right", "20px");
@@ -153,22 +154,19 @@ public class MainPageView extends VerticalLayout {
         logger.info("drawing polygon");
         drawCamVisibilityField(context, polygon, "#FF5D40");
         drawWalls(context);
+        //раскомментировать для отображения триангуляции
+//        showTriangulation(context);
+    }
 
-//        раскомментить для отображения триангуляции
-//        for (Triangle triangle : polygon.getTriangles()) {
-//            for (Line line : triangle.getListOfLines()) {
-//                context.setStrokeStyle("black");
-//                context.moveTo(line.getStart().getX(), line.getStart().getY());
-//                context.lineTo(line.getEnd().getX(), line.getEnd().getY());
-//                context.stroke();
-//            }
-//        }
-        //раскомментить для логирования сгенерированного полигона
-//        logger.info("generated polygon: \n");
-//        for (Line line : polygon.getLines()) {
-//            logger.info("line from (" + line.getStart().getX() + "," + line.getStart().getY()
-//                    + ") to (" + line.getEnd().getX() + "," + line.getEnd().getY() + ")");
-//        }
+    public void showTriangulation(CanvasRenderingContext2D context) {
+        for (Triangle triangle : polygon.getTriangles()) {
+            for (Line line : triangle.getListOfLines()) {
+                context.setStrokeStyle("black");
+                context.moveTo(line.getStart().getX(), line.getStart().getY());
+                context.lineTo(line.getEnd().getX(), line.getEnd().getY());
+                context.stroke();
+            }
+        }
     }
 
     public void drawWalls(CanvasRenderingContext2D context) {
@@ -181,6 +179,7 @@ public class MainPageView extends VerticalLayout {
     }
 
     public void drawCamVisibilityField(CanvasRenderingContext2D context, Polygon field, String color) {
+        context.setStrokeStyle(color);
         context.moveTo(field.getVertexes().get(0).getX(), field.getVertexes().get(0).getY());
         context.setFillStyle(color);
         context.beginPath();
@@ -194,10 +193,17 @@ public class MainPageView extends VerticalLayout {
         context.fill();
     }
 
-    public void drawCameras(CanvasRenderingContext2D context, List<Vertex> cameras) {
+    public void drawCameras(CanvasRenderingContext2D context, List<Vertex> cameras, String color) {
         for (Vertex camera : cameras) {
-            context.setFillStyle("black");
-            context.fillRect(camera.getX(), camera.getY(), 4, 4);
+            context.setFillStyle(color);
+            context.fillRect(camera.getX() - 1, camera.getY() - 1, 4, 4);
+            context.setStrokeStyle("black");
+            context.moveTo(camera.getX() - 2, camera.getY() - 2);
+            context.lineTo(camera.getX() + 3, camera.getY() - 2);
+            context.lineTo(camera.getX() + 3, camera.getY() + 3);
+            context.lineTo(camera.getX() - 2, camera.getY() + 3);
+            context.lineTo(camera.getX() - 2, camera.getY() - 2);
+            context.stroke();
         }
     }
 
@@ -214,5 +220,10 @@ public class MainPageView extends VerticalLayout {
         }
 
         Triangulation.invoke(polygon);
+    }
+
+    public String getCamVisibilityColor(int camNumber) {
+        return new ArrayList<>(List.of("#62DA97", "#37DA7E", "#00B64F", "#22884F", "#007633",
+                "#B5F36D", "#9FF33D", "#71AD2B", "#7CE700", "#519600")).get(camNumber % 10);
     }
 }
