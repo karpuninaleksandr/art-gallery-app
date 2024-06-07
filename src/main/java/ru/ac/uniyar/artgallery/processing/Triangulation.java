@@ -1,13 +1,10 @@
 package ru.ac.uniyar.artgallery.processing;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.ac.uniyar.artgallery.model.*;
 
 public class Triangulation {
 
-    private static final Logger logger = LoggerFactory.getLogger(Triangulation.class);
-
+    /* базовый метод вызова */
     public static void invoke(Polygon polygon) {
         int n = polygon.getVertexes().size();
         if (n < 3) return;
@@ -49,6 +46,7 @@ public class Triangulation {
         }
     }
 
+    /* площадь треугольника на основе определителя */
     private static double area(Polygon polygon) {
         int n = polygon.getVertexes().size();
         double A = 0.0;
@@ -60,6 +58,7 @@ public class Triangulation {
         return (A * 0.5);
     }
 
+    /* проверка возможности отрезания "уха" многоугольника */
     private static boolean canBeCut(Polygon polygon, int u, int v, int w, int n, int[] indices) {
         Vertex A = polygon.getVertexes().get(indices[u]);
         Vertex B = polygon.getVertexes().get(indices[v]);

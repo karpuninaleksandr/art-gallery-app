@@ -18,6 +18,7 @@ public class Triangle {
     private Vertex vertex2;
     private Vertex vertex3;
 
+    /* получение площади треугольника */
     public double getField() {
         double a = new Line(vertex1, vertex2).getLength();
         double b = new Line(vertex2, vertex3).getLength();
@@ -27,6 +28,7 @@ public class Triangle {
         return Math.sqrt(p * (p - a) * (p - b) * (p - c));
     }
 
+    /* проверка принадлежности вершины внутреннему пространству треугольника */
     public boolean checkIfVertexIsInside(Vertex checkVertex) {
         //85, 268  36, 418
         if (getListOfLines().stream().anyMatch(it -> it.checkIfContainsVertex(checkVertex)))
@@ -45,6 +47,7 @@ public class Triangle {
         return Math.abs(field - sumOfFields) < eps || Double.isNaN(Math.abs(field - sumOfFields));
     }
 
+    /* получение сторон треугольника */
     public ArrayList<Line> getListOfLines() {
         ArrayList<Line> lines = new ArrayList<>();
         lines.add(new Line(vertex1, vertex2));
@@ -54,12 +57,14 @@ public class Triangle {
         return lines;
     }
 
+    /* проверка на "соседство" с переданным треугольником */
     public boolean isNextTo(Triangle triangle) {
         return this.contains(triangle.getVertex1(), triangle.getVertex2()) ||
                 this.contains(triangle.getVertex1(), triangle.getVertex3()) ||
                 this.contains(triangle.getVertex2(), triangle.getVertex3());
     }
 
+    /* проверка принадлежности двух переданных вершин треугольника */
     public boolean contains(Vertex vertex1, Vertex vertex2) {
         return checkIfTwoOfThreeVertexesAreEqual(this.vertex1, this.vertex2, this.vertex3, vertex1, vertex2) ||
                 checkIfTwoOfThreeVertexesAreEqual(this.vertex1, this.vertex3, this.vertex2, vertex1, vertex2) ||
@@ -69,6 +74,7 @@ public class Triangle {
                 checkIfTwoOfThreeVertexesAreEqual(this.vertex3, this.vertex2, this.vertex1, vertex1, vertex2);
     }
 
+    /* проверка равенства двух из трех вершин */
     public boolean checkIfTwoOfThreeVertexesAreEqual(Vertex v1, Vertex v2, Vertex v3, Vertex c1, Vertex c2) {
         if (v1.isEqualTo(c1) || v1.isEqualTo(c2)) {
             if (v2.isEqualTo(c1) || v2.isEqualTo(c2)) {
@@ -78,6 +84,7 @@ public class Triangle {
         return false;
     }
 
+    /* проверка валидности треугольника */
     public boolean isValid() {
         return !(new Line(vertex1, vertex3)).checkIfContainsVertex(vertex2);
     }

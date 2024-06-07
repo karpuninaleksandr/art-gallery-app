@@ -54,6 +54,7 @@ public class MainPageView extends VerticalLayout {
         init();
     }
 
+    /* инициализация уровня */
     public void init() {
         ++level;
 
@@ -150,6 +151,7 @@ public class MainPageView extends VerticalLayout {
         add(formLayout);
     }
 
+    /* визуализация многоугольника */
     public void drawPolygon(CanvasRenderingContext2D context) {
         logger.info("drawing polygon");
         drawCamVisibilityField(context, polygon, "#FF5D40");
@@ -158,6 +160,7 @@ public class MainPageView extends VerticalLayout {
 //        showTriangulation(context);
     }
 
+    /* визуализация триангулированного многоугольника */
     public void showTriangulation(CanvasRenderingContext2D context) {
         for (Triangle triangle : polygon.getTriangles()) {
             for (Line line : triangle.getListOfLines()) {
@@ -169,6 +172,7 @@ public class MainPageView extends VerticalLayout {
         }
     }
 
+    /* визуализация сторон многоугольника */
     public void drawWalls(CanvasRenderingContext2D context) {
         for (Line wall : polygon.getLines()) {
             context.setStrokeStyle("black");
@@ -178,6 +182,7 @@ public class MainPageView extends VerticalLayout {
         }
     }
 
+    /* визуализация области видимости камеры */
     public void drawCamVisibilityField(CanvasRenderingContext2D context, Polygon field, String color) {
         context.setStrokeStyle(color);
         context.moveTo(field.getVertexes().get(0).getX(), field.getVertexes().get(0).getY());
@@ -193,6 +198,7 @@ public class MainPageView extends VerticalLayout {
         context.fill();
     }
 
+    /* визуализация камер */
     public void drawCameras(CanvasRenderingContext2D context, List<Vertex> cameras, String color) {
         for (Vertex camera : cameras) {
             context.setFillStyle(color);
@@ -207,6 +213,7 @@ public class MainPageView extends VerticalLayout {
         }
     }
 
+    /* создание многоугольника */
     public void createPolygon() {
         logger.info("creating polygon");
 
@@ -222,6 +229,7 @@ public class MainPageView extends VerticalLayout {
         Triangulation.invoke(polygon);
     }
 
+    /* выбор цвета области видимости камеры */
     public String getCamVisibilityColor(int camNumber) {
         return new ArrayList<>(List.of("#62DA97", "#37DA7E", "#00B64F", "#22884F", "#007633",
                 "#B5F36D", "#9FF33D", "#71AD2B", "#7CE700", "#519600")).get(camNumber % 10);

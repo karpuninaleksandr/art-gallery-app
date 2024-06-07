@@ -1,7 +1,5 @@
 package ru.ac.uniyar.artgallery.processing;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.ac.uniyar.artgallery.model.Polygon;
 import ru.ac.uniyar.artgallery.model.Triangle;
 import ru.ac.uniyar.artgallery.model.Vertex;
@@ -11,8 +9,7 @@ import java.util.List;
 
 public class AutoSolving {
 
-    private static final Logger logger = LoggerFactory.getLogger(AutoSolving.class);
-
+    /* основной метод вызова */
     public static List<Vertex> invoke(Polygon polygon) {
 
         ArrayList<Vertex> reds = new ArrayList<>();
@@ -62,6 +59,7 @@ public class AutoSolving {
         }
     }
 
+    /* раскрашивание треугольника */
     public static boolean paintTriangle(List<Vertex> reds, List<Vertex> greens, List<Vertex> blues, Vertex v1, Vertex v2, Vertex v3) {
         List<Vertex> allColoredVertexes = new ArrayList<>(reds);
         allColoredVertexes.addAll(greens);
@@ -257,6 +255,7 @@ public class AutoSolving {
         return true;
     }
 
+    /* получение цвета вершины */
     public static String getVertexColor(List<Vertex> reds, List<Vertex> greens, List<Vertex> blues, Vertex check) {
         if (reds.contains(check)) return "red";
         if (greens.contains(check)) return "green";
@@ -264,6 +263,7 @@ public class AutoSolving {
         return "no_color";
     }
 
+    /* получение следующего к рассмотрению треугольника */
     public static Triangle getNextTriangleToCheck(Triangle last, ArrayList<Triangle> allTriangles,
                                            ArrayList<Triangle> doneTriangles) {
 

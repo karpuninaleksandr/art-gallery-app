@@ -18,17 +18,20 @@ public class Polygon {
 
     private final ArrayList<Triangle> triangles = new ArrayList<>();
 
+    /* добавление вершин */
     public void addVertexes(Collection<Vertex> vertexes) {
         this.vertexes.addAll(vertexes);
         this.mapToOtherFormats();
     }
 
+    /* маппинг от вершин к сторонам */
     public void mapToOtherFormats() {
         for (int i = 0; i < vertexes.size() - 1;)
             lines.add(new Line(vertexes.get(i), vertexes.get(++i)));
         lines.add(new Line(vertexes.get(vertexes.size() - 1), vertexes.get(0)));
     }
 
+    /* добавление сторон */
     public void addLines(Collection<Line> lines) {
         this.lines.addAll(lines);
         List<Vertex> vertexesToAdd = new ArrayList<>();
@@ -43,14 +46,17 @@ public class Polygon {
         this.addVertexes(vertexesToAdd);
     }
 
+    /* добавление треугольника */
     public void addTriangle(Triangle triangle) {
         this.triangles.add(triangle);
     }
 
+    /* добавление камеры */
     public void addCamera(Vertex camera) {
         this.cameras.add(camera);
     }
 
+    /* проверка принадлежности переданной вершины внутреннему пространству многоугольника */
     public boolean checkIfPointIsInside(Vertex checkVertex) {
         for (Triangle triangle : triangles)
             if (triangle.checkIfVertexIsInside(checkVertex))
@@ -58,6 +64,7 @@ public class Polygon {
         return false;
     }
 
+    /* проверка принадлежности переданной стороны внутреннему пространству многоугольника */
     public boolean checkIfLineIsInsideExceptVertex(Line line, Vertex except) {
         for (Vertex vertex : line.getAsListOfDots()) {
             if (vertex.isNotEqualTo(except) && !checkIfPointIsInside(vertex) && checkIfBordersDoNotContainVertex(vertex))
@@ -66,6 +73,7 @@ public class Polygon {
         return true;
     }
 
+    /* проверка непринадлежности переданной вершины сторонам многоугольника */
     public boolean checkIfBordersDoNotContainVertex(Vertex vertex) {
         for (Line line : lines) {
             if (line.checkIfContainsVertex(vertex)) return false;
@@ -73,11 +81,12 @@ public class Polygon {
         return true;
     }
 
+    /* очистка списка камер */
     public void clearCams() {
         this.cameras = new ArrayList<>();
     }
 
-    //todo some problems here ->
+    /* проверка полного покрытия многоугольника */
     public boolean isFullyCovered(List<Polygon> camVisibilityFields) {
         int notCovered = 0;
         List<Vertex> vertexesToCheck = new ArrayList<>();

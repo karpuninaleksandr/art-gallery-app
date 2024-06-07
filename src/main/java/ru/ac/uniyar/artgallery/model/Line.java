@@ -18,16 +18,19 @@ public class Line {
 
     private final double eps = 0.01;
 
+    /* проверка пересечения линий */
     public boolean crosses(Line line) {
         Vertex crossVertex = getLinesCrossVertex(line);
         return crossVertex != null && start.isNotEqualTo(crossVertex) && end.isNotEqualTo(crossVertex);
     }
 
+    /* проверка пересечения линий кроме переданной вершины */
     public boolean crossesExceptVertex(Line line, Vertex vertex) {
         Vertex crossVertex = getLinesCrossVertex(line);
         return crossVertex != null && start.isNotEqualTo(crossVertex) && end.isNotEqualTo(crossVertex) && vertex.isNotEqualTo(crossVertex);
     }
 
+    /* получение точки пересечения линий */
     public Vertex getLinesCrossVertex(Line line) {
         double k1, b1, k2, b2, xCross, yCross;
 
@@ -92,10 +95,12 @@ public class Line {
         return null;
     }
 
+    /* получение длины линии */
     public double getLength() {
         return Math.sqrt(Math.pow(start.getX() - end.getX(), 2) + Math.pow((start.getY() - end.getY()), 2));
     }
 
+    /* проверка отсутствия пересечения линий */
     public boolean canBeDrawn(List<Line> lines) {
         for (Line line : lines) {
             if (this.crosses(line))
@@ -104,6 +109,7 @@ public class Line {
         return true;
     }
 
+    /* проверка отсутствия пересечения линий кроме переданной вершины */
     public boolean canBeDrawnExceptVertex(Polygon polygon, Vertex vertex) {
         for (Line line : polygon.getLines()) {
             if (this.crossesExceptVertex(line, vertex))
@@ -112,6 +118,7 @@ public class Line {
         return true;
     }
 
+    /* расширение линии */
     public Line extendInOneWayPlus() {
         double k, b;
 
@@ -123,6 +130,7 @@ public class Line {
         return new Line(start, newEnd);
     }
 
+    /* расширение линии */
     public Line extendInOneWayMinus() {
         double k, b;
 
@@ -134,15 +142,18 @@ public class Line {
         return new Line(newStart, end);
     }
 
+    /* проверка принадлежности вершины линии */
     public boolean checkIfVertexIsOnTheLine(Vertex startCheck, Vertex endCheck, Vertex check) {
         return startCheck.getDistanceToVertex(check) + endCheck.getDistanceToVertex(check) <= startCheck.getDistanceToVertex(endCheck) + eps &&
                 startCheck.getDistanceToVertex(check) + endCheck.getDistanceToVertex(check) >= startCheck.getDistanceToVertex(endCheck) - eps;
     }
 
+    /* проверка принадлежности вершины линии */
     public boolean checkIfContainsVertex(Vertex check) {
         return checkIfVertexIsOnTheLine(start, end, check);
     }
 
+    /* преобразование линии в список вершин */
     public List<Vertex> getAsListOfDots() {
         List<Vertex> dots = new ArrayList<>();
         double xDiff = end.getX() - start.getX(), yDiff = end.getY() - start.getY(),

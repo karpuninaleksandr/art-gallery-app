@@ -1,7 +1,5 @@
 package ru.ac.uniyar.artgallery.processing;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.ac.uniyar.artgallery.model.Line;
 import ru.ac.uniyar.artgallery.model.Polygon;
 import ru.ac.uniyar.artgallery.model.Triangle;
@@ -17,8 +15,7 @@ public class PolygonGeneration {
     private static int width;
     private static int height;
 
-    private static final Logger logger = LoggerFactory.getLogger(PolygonGeneration.class);
-
+    /* базовый метод вызова */
     public static Polygon invoke(int numberOfVertexes, int height, int width) {
         PolygonGeneration.width = width;
         PolygonGeneration.height = height;
@@ -33,6 +30,7 @@ public class PolygonGeneration {
         return createPolygonFromSegments();
     }
 
+    /* генерация треугольника */
     private static void generateTriangle() {
         Vertex a = new Vertex(Math.random() * width, Math.random() * height);
         Vertex b = new Vertex(Math.random() * width, Math.random() * height);
@@ -50,14 +48,17 @@ public class PolygonGeneration {
         } else generateTriangle();
     }
 
+    /* проверка "красоты" треугольника */
     private static boolean checkCoefficient(Line a, Line b, Line c) {
         return createCoefficient(a, b, c) >= 1.05 && createCoefficient(b, c, a) >= 1.05 && createCoefficient(c, a, b) >= 1.05;
     }
 
+    /* создание коэффицента "красоты" треугольника */
     private static double createCoefficient(Line a, Line b, Line c) {
         return (a.getLength() + b.getLength()) / c.getLength();
     }
 
+    /* добавление вершины к многоугольнику */
     private static void addPoint() {
         Polygon polygon = new Polygon();
         polygon.addLines(segments);
@@ -107,6 +108,7 @@ public class PolygonGeneration {
         }
     }
 
+    /* сортировка сторон многоугольника */
     private static void sortSegments() {
         List<Line> sortedSegments = new ArrayList<>();
         sortedSegments.add(segments.get(0));
@@ -117,6 +119,7 @@ public class PolygonGeneration {
         }
     }
 
+    /* создание многоугольника из полученных сторон */
     private static Polygon createPolygonFromSegments() {
         Polygon polygon = new Polygon();
         polygon.addVertexes(segments.stream().map(Line::getStart).toList());

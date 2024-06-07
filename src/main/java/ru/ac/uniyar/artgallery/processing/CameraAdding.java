@@ -1,7 +1,5 @@
 package ru.ac.uniyar.artgallery.processing;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.ac.uniyar.artgallery.model.Line;
 import ru.ac.uniyar.artgallery.model.Polygon;
 import ru.ac.uniyar.artgallery.model.Vertex;
@@ -10,8 +8,7 @@ import java.util.*;
 
 public class CameraAdding {
 
-    private static final Logger logger = LoggerFactory.getLogger(CameraAdding.class);
-
+    /* получение области видимости камеры */
     public static Polygon getCamVisibilityField(Vertex camera, Polygon polygon) {
         if (polygon.checkIfPointIsInside(camera)) {
             polygon.addCamera(camera);
@@ -19,6 +16,7 @@ public class CameraAdding {
         } else return null;
     }
 
+    /* создание области видимости камеры */
     public static Polygon createCamVisibilityField(Vertex camera, Polygon polygon) {
         ArrayList<Vertex> vertexesToDrawLinesTo = new ArrayList<>();
         for (Vertex vertex : polygon.getVertexes()) {
@@ -49,6 +47,7 @@ public class CameraAdding {
         return result;
     }
 
+    /* получение точки пересечения расширенной линии */
     public static Vertex getCrossingVertexOfExtendedLine(Line line, Vertex vertex, Polygon polygon) {
         Vertex crossVertex = new Vertex(100000, 100000);
         for (Line linePolygon : polygon.getLines()) {
@@ -62,6 +61,7 @@ public class CameraAdding {
         return crossVertex.isEqualTo(new Vertex(100000, 100000)) ? null : crossVertex;
     }
 
+    /* упорядочивание вершин */
     public static List<Vertex> getOrderedVertexes(ArrayList<Vertex> vertexesWithNoOrder, List<Line> lines) {
         ArrayList<Vertex> orderedVertexes = new ArrayList<>();
         for (Line line : lines) {
