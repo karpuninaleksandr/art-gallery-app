@@ -4,3 +4,12 @@ canvas:
 
 server:
   port: 8080
+
+spring:
+  servlet:
+    multipart:
+      enabled = false
+
+#vaadin:
+#  productionMode:
+#    true
