@@ -16,7 +16,7 @@ public class Line {
     private Vertex start;
     private Vertex end;
 
-    private final double eps = 0.005;
+    private final double eps = 0.01;
 
     /* проверка пересечения линий */
     public boolean crosses(Line line) {

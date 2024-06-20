@@ -12,7 +12,7 @@ import java.util.ArrayList;
 @Getter
 @Setter
 public class Triangle {
-    private final double eps = 0.00000001;
+    private final double eps = 0.005;
 
     private Vertex vertex1;
     private Vertex vertex2;
@@ -30,6 +30,7 @@ public class Triangle {
 
     /* проверка принадлежности вершины внутреннему пространству треугольника */
     public boolean checkIfVertexIsInside(Vertex checkVertex) {
+        //85, 268  36, 418
         if (getListOfLines().stream().anyMatch(it -> it.checkIfContainsVertex(checkVertex)))
             return true;
 
@@ -41,6 +42,7 @@ public class Triangle {
                 (Double.isNaN(smallTriangle1.getField()) ? 0 : smallTriangle1.getField()) +
                 (Double.isNaN(smallTriangle3.getField()) ? 0 : smallTriangle3.getField());
         double field = this.getField();
+        double eps = field >= sumOfFields ? field * 0.001 : sumOfFields * 0.001;
 
         return Math.abs(field - sumOfFields) < eps || Double.isNaN(Math.abs(field - sumOfFields));
     }

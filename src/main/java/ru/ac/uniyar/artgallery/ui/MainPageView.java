@@ -33,6 +33,7 @@ public class MainPageView extends VerticalLayout {
     @Value("${canvas.width}")
     private int canvasWidth;
 
+    private final Logger logger = LoggerFactory.getLogger(MainPageView.class);
     private Polygon polygon;
     private List<Polygon> camVisibilityFields;
 
@@ -42,6 +43,8 @@ public class MainPageView extends VerticalLayout {
     private double points;
 
     public MainPageView(@Value("${canvas.height}") int height, @Value("${canvas.width}") int width) {
+        logger.info("main page initialization");
+
         this.canvasHeight = height;
         this.canvasWidth = width;
 
@@ -84,17 +87,20 @@ public class MainPageView extends VerticalLayout {
         endStatistics.getStyle().set("margin-top", "20px");
 
         canvas.addMouseClickListener(it -> {
-            System.out.println(it.getOffsetX() + " " + it.getOffsetY());
-            Polygon camVisibilityField = CameraAdding.getCamVisibilityField(new Vertex((double) it.getOffsetX(), (double) it.getOffsetY()), polygon);
+            logger.info("clicked on " + it.getOffsetX() + " " + it.getOffsetY());
+            Polygon camVisibilityField = CameraAdding.getCamVisibilityField(new Vertex(it.getOffsetX(), it.getOffsetY()), polygon);
             if (camVisibilityField != null) {
+                logger.info("is not null");
                 camVisibilityFields.add(camVisibilityField);
+                logger.info("started triangulation");
                 Triangulation.invoke(camVisibilityField);
+                logger.info("ended triangulation");
                 drawCamVisibilityField(canvas.getContext(), camVisibilityField,
                         getCamVisibilityColor(polygon.getCameras().size() - 1));
                 drawCameras(canvas.getContext(), polygon.getCameras(), "black");
             }
 
-            if (polygon.isFullyCovered() && !ended.get()) {
+            if (polygon.isFullyCovered(camVisibilityFields) && !ended.get()) {
                 ended.set(true);
                 levelEnded.setText("Уровень пройден!");
                 int auto = AutoSolving.invoke(polygon).size();
@@ -112,7 +118,6 @@ public class MainPageView extends VerticalLayout {
         });
 
         canvas.getStyle().set("border-style", "solid");
-//        canvas.getStyle().set("width", "100%");
 
         createPolygon();
         drawPolygon(canvas.getContext());
@@ -148,6 +153,7 @@ public class MainPageView extends VerticalLayout {
 
     /* визуализация многоугольника */
     public void drawPolygon(CanvasRenderingContext2D context) {
+        logger.info("drawing polygon");
         drawCamVisibilityField(context, polygon, "#FF5D40");
         drawWalls(context);
         //раскомментировать для отображения триангуляции
@@ -209,14 +215,16 @@ public class MainPageView extends VerticalLayout {
 
     /* создание многоугольника */
     public void createPolygon() {
+        logger.info("creating polygon");
+
         camVisibilityFields = new ArrayList<>();
 
         polygon = PolygonGeneration.invoke(level, canvasHeight, canvasWidth);
         polygon.clearCams();
 
-//        for (Vertex vertex : polygon.getVertexes()) {
-//            System.out.println("new Vertex(" + vertex.getX() + "," + vertex.getY() + "),");
-//        }
+        for (Vertex vertex : polygon.getVertexes()) {
+            System.out.println("new Vertex(" + vertex.getX() + "," + vertex.getY() + "),");
+        }
 
         Triangulation.invoke(polygon);
     }
