@@ -104,7 +104,7 @@ public class Polygon {
                     }
                 }
                 if (!isInside) ++notCovered;
-                if (notCovered > (double) vertexesToCheck.size() / 200) {
+                if (notCovered > (double) vertexesToCheck.size() / 50) {
                     return false;
                 }
             }

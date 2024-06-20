@@ -6,8 +6,6 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.router.Route;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.vaadin.pekkam.Canvas;
@@ -114,9 +112,6 @@ public class MainPageView extends VerticalLayout {
         canvas.getStyle().set("border-style", "solid");
 //        canvas.getStyle().set("width", "100%");
 
-        createPolygon();
-        drawPolygon(canvas.getContext());
-
         Button next = new Button("Перейти к следующему уровню");
         next.addClickListener(it -> init());
 
@@ -144,6 +139,14 @@ public class MainPageView extends VerticalLayout {
         formLayout.getStyle().set("width", "100%");
 
         add(formLayout);
+
+        createPolygon();
+        drawPolygon(canvas.getContext());
+        for (Polygon camVisibilityField : camVisibilityFields) {
+            drawCamVisibilityField(canvas.getContext(), camVisibilityField,
+                    getCamVisibilityColor(polygon.getCameras().size() - 1));
+        }
+        drawCameras(canvas.getContext(), polygon.getCameras(), "black");
     }
 
     /* визуализация многоугольника */
