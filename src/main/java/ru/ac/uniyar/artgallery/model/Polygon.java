@@ -87,30 +87,28 @@ public class Polygon {
     }
 
     /* проверка полного покрытия многоугольника */
-    public boolean isFullyCovered(List<Polygon> camVisibilityFields) {
-        int notCovered = 0;
-        List<Vertex> vertexesToCheck = new ArrayList<>();
+    public boolean isFullyCovered() {
         for (Triangle triangle : this.triangles) {
+            int notCovered = 0;
+            List<Vertex> vertexesToCheck = new ArrayList<>();
             vertexesToCheck.add(triangle.getVertex1());
             vertexesToCheck.add(triangle.getVertex2());
             vertexesToCheck.add(triangle.getVertex3());
-            for (Line line : triangle.getListOfLines()) {
+            for (Line line : triangle.getListOfLines())
                 vertexesToCheck.addAll(line.getAsListOfDots());
-            }
-        }
-        for (Vertex currentCheck : vertexesToCheck) {
-            boolean isInside = false;
-            for (Polygon camField : camVisibilityFields) {
-                if (camField.checkIfPointIsInside(currentCheck)) {
-                    isInside = true;
+            for (Vertex currentCheck : vertexesToCheck) {
+                boolean isInside = false;
+                for (Vertex camera : this.cameras) {
+                    if (new Line(currentCheck, camera).canBeDrawnExceptVertex(this, currentCheck)) {
+                        isInside = true;
+                    }
+                }
+                if (!isInside) ++notCovered;
+                if (notCovered > (double) vertexesToCheck.size() / 200) {
+                    return false;
                 }
             }
-            if (!isInside) {
-                System.out.println("(" + currentCheck.getX() + "," + currentCheck.getY() +")");
-                ++notCovered;
-            }
         }
-        System.out.println(notCovered + " " + vertexesToCheck.size());
-        return notCovered < (double) vertexesToCheck.size() / 100;
+        return true;
     }
 }
