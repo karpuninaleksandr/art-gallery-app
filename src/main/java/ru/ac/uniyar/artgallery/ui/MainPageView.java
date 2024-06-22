@@ -1,6 +1,5 @@
 package ru.ac.uniyar.artgallery.ui;
 
-import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -9,11 +8,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.UIScope;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.vaadin.pekkam.Canvas;
 import org.vaadin.pekkam.CanvasRenderingContext2D;
 import ru.ac.uniyar.artgallery.model.*;
@@ -58,6 +54,8 @@ public class MainPageView extends VerticalLayout {
 
     /* инициализация уровня */
     public void init() {
+        removeAll();
+
         ++level;
         canvas = new Canvas(canvasWidth, canvasHeight);
         Text top = new Text("Охрана картинной галереи");
