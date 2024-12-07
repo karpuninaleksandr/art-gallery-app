@@ -20,9 +20,7 @@ public class Polygon {
 
     /* добавление вершин */
     public void addVertexes(Collection<Vertex> vertexes) {
-        List<Vertex> newList = new ArrayList<>(this.vertexes);
-        newList.addAll(vertexes);
-        this.vertexes = newList;
+        this.vertexes = copyOnWrite(this.vertexes, vertexes.stream().toList());
         this.mapToOtherFormats();
     }
 
@@ -37,9 +35,7 @@ public class Polygon {
 
     /* добавление сторон */
     public void addLines(Collection<Line> lines) {
-        List<Line> newList = new ArrayList<>(this.lines);
-        newList.addAll(lines);
-        this.lines = newList;
+        this.lines = copyOnWrite(this.lines, lines.stream().toList());
         List<Vertex> vertexesToAdd = new ArrayList<>();
         for (Line line : lines) {
             if (!vertexesToAdd.contains(line.getStart())) {
@@ -54,16 +50,12 @@ public class Polygon {
 
     /* добавление треугольника */
     public void addTriangle(Triangle triangle) {
-        List<Triangle> newList = new ArrayList<>(this.triangles);
-        newList.add(triangle);
-        this.triangles = newList;
+        this.triangles = copyOnWrite(this.triangles, List.of(triangle));
     }
 
     /* добавление камеры */
     public void addCamera(Vertex camera) {
-        List<Vertex> newList = new ArrayList<>(this.cameras);
-        newList.add(camera);
-        this.cameras = newList;
+        this.cameras = copyOnWrite(this.cameras, List.of(camera));
     }
 
     /* проверка принадлежности переданной вершины внутреннему пространству многоугольника */
@@ -115,5 +107,11 @@ public class Polygon {
             }
         }
         return true;
+    }
+
+    private <T> List<T> copyOnWrite(List<T> list, List<T> addedObjects) {
+        List<T> newList = new ArrayList<>(list);
+        newList.addAll(addedObjects);
+        return newList;
     }
 }
