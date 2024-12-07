@@ -26,6 +26,7 @@ public class Polygon {
 
     /* маппинг от вершин к сторонам */
     public void mapToOtherFormats() {
+        lines.clear();
         for (int i = 0; i < vertexes.size() - 1;)
             lines.add(new Line(vertexes.get(i), vertexes.get(++i)));
         lines.add(new Line(vertexes.get(vertexes.size() - 1), vertexes.get(0)));
