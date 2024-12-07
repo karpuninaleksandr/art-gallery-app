@@ -10,31 +10,36 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 public class Polygon {
-    private final ArrayList<Vertex> vertexes = new ArrayList<>();
+    private List<Vertex> vertexes = new ArrayList<>();
 
     private List<Vertex> cameras = new ArrayList<>();
 
-    private final ArrayList<Line> lines = new ArrayList<>();
+    private List<Line> lines = new ArrayList<>();
 
-    private final ArrayList<Triangle> triangles = new ArrayList<>();
+    private List<Triangle> triangles = new ArrayList<>();
 
     /* добавление вершин */
     public void addVertexes(Collection<Vertex> vertexes) {
-        this.vertexes.addAll(vertexes);
+        List<Vertex> newList = new ArrayList<>(this.vertexes);
+        newList.addAll(vertexes);
+        this.vertexes = newList;
         this.mapToOtherFormats();
     }
 
     /* маппинг от вершин к сторонам */
     public void mapToOtherFormats() {
-        lines.clear();
+        List<Line> newList = new ArrayList<>();
         for (int i = 0; i < vertexes.size() - 1;)
-            lines.add(new Line(vertexes.get(i), vertexes.get(++i)));
-        lines.add(new Line(vertexes.get(vertexes.size() - 1), vertexes.get(0)));
+            newList.add(new Line(vertexes.get(i), vertexes.get(++i)));
+        newList.add(new Line(vertexes.get(vertexes.size() - 1), vertexes.get(0)));
+        this.lines = newList;
     }
 
     /* добавление сторон */
     public void addLines(Collection<Line> lines) {
-        this.lines.addAll(lines);
+        List<Line> newList = new ArrayList<>(this.lines);
+        newList.addAll(lines);
+        this.lines = newList;
         List<Vertex> vertexesToAdd = new ArrayList<>();
         for (Line line : lines) {
             if (!vertexesToAdd.contains(line.getStart())) {
@@ -49,12 +54,16 @@ public class Polygon {
 
     /* добавление треугольника */
     public void addTriangle(Triangle triangle) {
-        this.triangles.add(triangle);
+        List<Triangle> newList = new ArrayList<>(this.triangles);
+        newList.add(triangle);
+        this.triangles = newList;
     }
 
     /* добавление камеры */
     public void addCamera(Vertex camera) {
-        this.cameras.add(camera);
+        List<Vertex> newList = new ArrayList<>(this.cameras);
+        newList.add(camera);
+        this.cameras = newList;
     }
 
     /* проверка принадлежности переданной вершины внутреннему пространству многоугольника */

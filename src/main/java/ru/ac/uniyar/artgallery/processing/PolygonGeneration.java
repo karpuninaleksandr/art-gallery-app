@@ -6,11 +6,9 @@ import ru.ac.uniyar.artgallery.model.Triangle;
 import ru.ac.uniyar.artgallery.model.Vertex;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class PolygonGeneration {
-    private static final List<Line> segments = new ArrayList<>();
 
     private static int width;
     private static int height;
@@ -20,18 +18,18 @@ public class PolygonGeneration {
         PolygonGeneration.width = width;
         PolygonGeneration.height = height;
 
-        generateTriangle();
+        List<Line> segments = generateTriangle();
 
         for (int i = 0; i < numberOfVertexes - 3; ++i)
-            addPoint();
+            addPoint(segments);
 
-        sortSegments();
+        sortSegments(segments);
 
-        return createPolygonFromSegments();
+        return createPolygonFromSegments(segments);
     }
 
     /* генерация треугольника */
-    private static void generateTriangle() {
+    private static ArrayList<Line> generateTriangle() {
         Vertex a = new Vertex(Math.random() * width, Math.random() * height);
         Vertex b = new Vertex(Math.random() * width, Math.random() * height);
         Vertex c = new Vertex(Math.random() * width, Math.random() * height);
@@ -41,11 +39,11 @@ public class PolygonGeneration {
             Line bc = new Line(b, c);
             Line ca = new Line(c, a);
             if (checkCoefficient(ab,  bc, ca)) {
-                generateTriangle();
+                return generateTriangle();
             } else {
-                segments.addAll(Arrays.asList(ab, bc, ca));
+                return new ArrayList<>(List.of(ab, bc, ca));
             }
-        } else generateTriangle();
+        } else return generateTriangle();
     }
 
     /* проверка "красоты" треугольника */
@@ -59,7 +57,7 @@ public class PolygonGeneration {
     }
 
     /* добавление вершины к многоугольнику */
-    private static void addPoint() {
+    private static void addPoint(List<Line> segments) {
         Polygon polygon = new Polygon();
         polygon.addLines(segments);
         Vertex randomVertex;
@@ -109,7 +107,7 @@ public class PolygonGeneration {
     }
 
     /* сортировка сторон многоугольника */
-    private static void sortSegments() {
+    private static void sortSegments(List<Line> segments) {
         List<Line> sortedSegments = new ArrayList<>();
         sortedSegments.add(segments.get(0));
         for (Line line : segments) {
@@ -120,10 +118,9 @@ public class PolygonGeneration {
     }
 
     /* создание многоугольника из полученных сторон */
-    private static Polygon createPolygonFromSegments() {
+    private static Polygon createPolygonFromSegments(List<Line> segments) {
         Polygon polygon = new Polygon();
         polygon.addVertexes(segments.stream().map(Line::getStart).toList());
-        segments.clear();
 
         return polygon;
     }

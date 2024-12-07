@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Line {
@@ -91,7 +90,7 @@ public class Line {
         Vertex checkVertex = new Vertex(xCross, yCross);
 
         if (checkIfVertexIsOnTheLine(start, end, checkVertex) && checkIfVertexIsOnTheLine(line.getStart(), line.getEnd(), checkVertex))
-            return new Vertex(xCross, yCross);
+            return checkVertex;
         return null;
     }
 
@@ -118,28 +117,15 @@ public class Line {
         return true;
     }
 
-    /* расширение линии */
-    public Line extendInOneWayPlus() {
+    public Line extend(int x) {
         double k, b;
 
         k = (end.getY() - start.getY()) / (end.getX() - start.getX());
         b = start.getY() - k * start.getX();
 
-        Vertex newEnd = new Vertex(1000, k * 1000 + b);
+        Vertex newEnd = new Vertex(x, k * x + b);
 
         return new Line(start, newEnd);
-    }
-
-    /* расширение линии */
-    public Line extendInOneWayMinus() {
-        double k, b;
-
-        k = (end.getY() - start.getY()) / (end.getX() - start.getX());
-        b = start.getY() - k * start.getX();
-
-        Vertex newStart = new Vertex(0, b);
-
-        return new Line(newStart, end);
     }
 
     /* проверка принадлежности вершины линии */

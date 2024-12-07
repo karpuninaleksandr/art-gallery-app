@@ -24,14 +24,14 @@ public class CameraAdding {
             if (lineToDraw.canBeDrawn(polygon.getLines())) {
                 if (!vertexesToDrawLinesTo.contains(vertex)) {
                     vertexesToDrawLinesTo.add(vertex);
-                    Vertex vertexPlus = getCrossingVertexOfExtendedLine(lineToDraw.extendInOneWayPlus(), vertex, polygon);
+                    Vertex vertexPlus = getCrossingVertexOfExtendedLine(lineToDraw.extend(1000), vertex, polygon);
                     if (vertexPlus != null && new Line(camera, vertexPlus).canBeDrawnExceptVertex(polygon, vertex)
                             && polygon.checkIfLineIsInsideExceptVertex(new Line(camera, vertexPlus), vertex)) {
                         if (!vertexesToDrawLinesTo.contains(vertexPlus)) {
                             vertexesToDrawLinesTo.add(vertexPlus);
                         }
                     }
-                    Vertex vertexMinus = getCrossingVertexOfExtendedLine(lineToDraw.extendInOneWayMinus(), vertex, polygon);
+                    Vertex vertexMinus = getCrossingVertexOfExtendedLine(lineToDraw.extend(0), vertex, polygon);
                     if (vertexMinus != null && new Line(camera, vertexMinus).canBeDrawnExceptVertex(polygon, vertex)
                             && polygon.checkIfLineIsInsideExceptVertex(new Line(camera, vertexMinus), vertex)) {
                         if (!vertexesToDrawLinesTo.contains(vertexMinus)) {

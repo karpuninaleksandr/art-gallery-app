@@ -150,20 +150,6 @@ public class MainPageView extends VerticalLayout {
     public void drawPolygon(CanvasRenderingContext2D context) {
         drawCamVisibilityField(context, polygon, "#FF5D40");
         drawWalls(context);
-        //раскомментировать для отображения триангуляции
-//        showTriangulation(context);
-    }
-
-    /* визуализация триангулированного многоугольника */
-    public void showTriangulation(CanvasRenderingContext2D context) {
-        for (Triangle triangle : polygon.getTriangles()) {
-            for (Line line : triangle.getListOfLines()) {
-                context.setStrokeStyle("black");
-                context.moveTo(line.getStart().getX(), line.getStart().getY());
-                context.lineTo(line.getEnd().getX(), line.getEnd().getY());
-                context.stroke();
-            }
-        }
     }
 
     /* визуализация сторон многоугольника */
@@ -183,9 +169,7 @@ public class MainPageView extends VerticalLayout {
         context.setFillStyle(color);
         context.beginPath();
 
-        for (Vertex vertex : field.getVertexes()) {
-            context.lineTo(vertex.getX(), vertex.getY());
-        }
+        field.getVertexes().forEach(it -> context.lineTo(it.getX(), it.getY()));
         context.lineTo(field.getVertexes().get(0).getX(), field.getVertexes().get(0).getY());
 
         context.closePath();
@@ -213,16 +197,12 @@ public class MainPageView extends VerticalLayout {
 
         polygon = PolygonGeneration.invoke(level, canvasHeight, canvasWidth);
 
-//        for (Vertex vertex : polygon.getVertexes()) {
-//            System.out.println("new Vertex(" + vertex.getX() + "," + vertex.getY() + "),");
-//        }
-
         Triangulation.invoke(polygon);
     }
 
     /* выбор цвета области видимости камеры */
     public String getCamVisibilityColor(int camNumber) {
-        return new ArrayList<>(List.of("#62DA97", "#37DA7E", "#00B64F", "#22884F", "#007633",
-                "#B5F36D", "#9FF33D", "#71AD2B", "#7CE700", "#519600")).get(camNumber % 10);
+        return List.of("#62DA97", "#37DA7E", "#00B64F", "#22884F", "#007633",
+                "#B5F36D", "#9FF33D", "#71AD2B", "#7CE700", "#519600").get(camNumber % 10);
     }
 }
