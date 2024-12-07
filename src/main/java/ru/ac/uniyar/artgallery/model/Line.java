@@ -31,7 +31,13 @@ public class Line {
 
     /* получение точки пересечения линий */
     public Vertex getLinesCrossVertex(Line line) {
-        double k1, b1, k2, b2, xCross, yCross;
+        double k1, b1, k2, b2, xCross;
+
+        k1 = calculateK(start, end);
+        k2 = calculateK(line.getStart(), line.getEnd());
+
+        b1 = calculateB(start, k1);
+        b2 = calculateB(line.getStart(), k2);
 
         if (start.getX() == end.getX()) {
             if (line.getStart().getX() == line.getEnd().getX()) {
@@ -44,35 +50,14 @@ public class Line {
                     return null;
                 }
             }
-            k2 = (line.getEnd().getY() - line.getStart().getY()) / (line.getEnd().getX() - line.getStart().getX());
-            b2 = line.getStart().getY() - k2 * line.getStart().getX();
             xCross = start.getX();
-            yCross = k2 * start.getX() + b2;
-            Vertex checkVertex = new Vertex(xCross, yCross);
-            if (checkIfVertexIsOnTheLine(start, end, checkVertex) &&
-                    checkIfVertexIsOnTheLine(line.getStart(), line.getEnd(), checkVertex)) {
-                return new Vertex(xCross, yCross);
-            }
-            return null;
+            return getCrossing(xCross, calculateYCross(k2, xCross, b2), line);
         }
 
         if (line.getStart().getX() == line.getEnd().getX()) {
-            k1 = (end.getY() - start.getY()) / (end.getX() - start.getX());
-            b1 = start.getY() - k1 * start.getX();
             xCross = line.getStart().getX();
-            yCross = k1 * line.getStart().getX() + b1;
-            Vertex checkVertex = new Vertex(xCross, yCross);
-            if (checkIfVertexIsOnTheLine(start, end, checkVertex) && checkIfVertexIsOnTheLine(line.getStart(), line.getEnd(), checkVertex)) {
-                return new Vertex(xCross, yCross);
-            }
-            return null;
+            return getCrossing(xCross, calculateYCross(k1, xCross, b1), line);
         }
-
-        k1 = (end.getY() - start.getY()) / (end.getX() - start.getX());
-        k2 = (line.getEnd().getY() - line.getStart().getY()) / (line.getEnd().getX() - line.getStart().getX());
-
-        b1 = start.getY() - k1 * start.getX();
-        b2 = line.getStart().getY() - k2 * line.getStart().getX();
 
         if (k1 == k2) {
             if (b1 == b2) {
@@ -86,12 +71,19 @@ public class Line {
         }
 
         xCross = (b2 - b1) / (k1 - k2);
-        yCross = k1 * xCross + b1;
-        Vertex checkVertex = new Vertex(xCross, yCross);
+        return getCrossing(xCross, calculateYCross(k1, xCross, b1), line);
+    }
 
-        if (checkIfVertexIsOnTheLine(start, end, checkVertex) && checkIfVertexIsOnTheLine(line.getStart(), line.getEnd(), checkVertex))
-            return checkVertex;
-        return null;
+    private double calculateK(Vertex start, Vertex end) {
+        return (end.getY() - start.getY()) / (end.getX() - start.getX());
+    }
+
+    private double calculateB(Vertex vertex, double k) {
+        return vertex.getY() - k * vertex.getX();
+    }
+
+    private double calculateYCross(double k, double x, double b) {
+        return k * x + b;
     }
 
     /* получение длины линии */
@@ -126,6 +118,14 @@ public class Line {
         Vertex newEnd = new Vertex(x, k * x + b);
 
         return new Line(start, newEnd);
+    }
+
+    public Vertex getCrossing(double x, double y, Line line) {
+        Vertex checkVertex = new Vertex(x, y);
+        if (checkIfVertexIsOnTheLine(start, end, checkVertex) && checkIfVertexIsOnTheLine(line.getStart(), line.getEnd(), checkVertex)) {
+            return new Vertex(x, y);
+        }
+        return null;
     }
 
     /* проверка принадлежности вершины линии */

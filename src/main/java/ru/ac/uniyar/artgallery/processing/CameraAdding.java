@@ -24,20 +24,8 @@ public class CameraAdding {
             if (lineToDraw.canBeDrawn(polygon.getLines())) {
                 if (!vertexesToDrawLinesTo.contains(vertex)) {
                     vertexesToDrawLinesTo.add(vertex);
-                    Vertex vertexPlus = getCrossingVertexOfExtendedLine(lineToDraw.extend(1000), vertex, polygon);
-                    if (vertexPlus != null && new Line(camera, vertexPlus).canBeDrawnExceptVertex(polygon, vertex)
-                            && polygon.checkIfLineIsInsideExceptVertex(new Line(camera, vertexPlus), vertex)) {
-                        if (!vertexesToDrawLinesTo.contains(vertexPlus)) {
-                            vertexesToDrawLinesTo.add(vertexPlus);
-                        }
-                    }
-                    Vertex vertexMinus = getCrossingVertexOfExtendedLine(lineToDraw.extend(0), vertex, polygon);
-                    if (vertexMinus != null && new Line(camera, vertexMinus).canBeDrawnExceptVertex(polygon, vertex)
-                            && polygon.checkIfLineIsInsideExceptVertex(new Line(camera, vertexMinus), vertex)) {
-                        if (!vertexesToDrawLinesTo.contains(vertexMinus)) {
-                            vertexesToDrawLinesTo.add(vertexMinus);
-                        }
-                    }
+                    addIfVertexIsPartOfVisibilityField(1000, camera, polygon, vertexesToDrawLinesTo, lineToDraw, vertex);
+                    addIfVertexIsPartOfVisibilityField(0, camera, polygon, vertexesToDrawLinesTo, lineToDraw, vertex);
                 }
             }
         }
@@ -45,6 +33,15 @@ public class CameraAdding {
         Polygon result = new Polygon();
         result.addVertexes(getOrderedVertexes(vertexesToDrawLinesTo, polygon.getLines()));
         return result;
+    }
+
+    public static void addIfVertexIsPartOfVisibilityField(int parameter, Vertex camera, Polygon polygon, List<Vertex> field, Line line, Vertex vertex) {
+        Vertex extendedVertex = getCrossingVertexOfExtendedLine(line.extend(parameter), vertex, polygon);
+
+        if (extendedVertex != null && new Line(camera, extendedVertex).canBeDrawnExceptVertex(polygon, vertex)
+                && polygon.checkIfLineIsInsideExceptVertex(new Line(camera, extendedVertex), vertex) && !field.contains(extendedVertex)) {
+            field.add(extendedVertex);
+        }
     }
 
     /* получение точки пересечения расширенной линии */
@@ -64,19 +61,19 @@ public class CameraAdding {
     /* упорядочивание вершин */
     public static List<Vertex> getOrderedVertexes(ArrayList<Vertex> vertexesWithNoOrder, List<Line> lines) {
         ArrayList<Vertex> orderedVertexes = new ArrayList<>();
-        for (Line line : lines) {
+        lines.forEach(it -> {
             ArrayList<Vertex> vertexesOnTheLine = new ArrayList<>();
             for (Vertex vertex : vertexesWithNoOrder) {
                 if (orderedVertexes.contains(vertex)) {
                     continue;
                 }
-                if (line.checkIfContainsVertex(vertex)) {
+                if (it.checkIfContainsVertex(vertex)) {
                     vertexesOnTheLine.add(vertex);
                 }
             }
             orderedVertexes.addAll(vertexesOnTheLine.stream().sorted((v1, v2) ->
-                    (int)(v1.getDistanceToVertex(line.getStart()) - v2.getDistanceToVertex(line.getStart()))).toList());
-        }
+                    (int)(v1.getDistanceToVertex(it.getStart()) - v2.getDistanceToVertex(it.getStart()))).toList());
+        });
         return orderedVertexes;
     }
 }
