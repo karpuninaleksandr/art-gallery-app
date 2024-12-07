@@ -144,11 +144,6 @@ public class MainPageView extends VerticalLayout {
 
         createPolygon();
         drawPolygon(canvas.getContext());
-        for (Polygon camVisibilityField : camVisibilityFields) {
-            drawCamVisibilityField(canvas.getContext(), camVisibilityField,
-                    getCamVisibilityColor(polygon.getCameras().size() - 1));
-        }
-        drawCameras(canvas.getContext(), polygon.getCameras(), "black");
     }
 
     /* визуализация многоугольника */
@@ -217,7 +212,6 @@ public class MainPageView extends VerticalLayout {
         camVisibilityFields = new ArrayList<>();
 
         polygon = PolygonGeneration.invoke(level, canvasHeight, canvasWidth);
-        polygon.clearCams();
 
 //        for (Vertex vertex : polygon.getVertexes()) {
 //            System.out.println("new Vertex(" + vertex.getX() + "," + vertex.getY() + "),");

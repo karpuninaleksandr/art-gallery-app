@@ -81,11 +81,6 @@ public class Polygon {
         return true;
     }
 
-    /* очистка списка камер */
-    public void clearCams() {
-        this.cameras = new ArrayList<>();
-    }
-
     /* проверка полного покрытия многоугольника */
     public boolean isFullyCovered() {
         for (Triangle triangle : this.triangles) {
