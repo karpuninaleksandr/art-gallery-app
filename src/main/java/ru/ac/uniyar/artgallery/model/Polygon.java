@@ -2,7 +2,7 @@ package ru.ac.uniyar.artgallery.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import ru.ac.uniyar.artgallery.CopyOnWriteUtils;
+import ru.ac.uniyar.artgallery.Utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +21,7 @@ public class Polygon {
 
     /* добавление вершин */
     public void addVertexes(Collection<Vertex> vertexes) {
-        this.vertexes = CopyOnWriteUtils.addToList(this.vertexes, vertexes.stream().toList());
+        this.vertexes = Utils.addToList(this.vertexes, vertexes.stream().toList());
         this.mapToOtherFormats();
     }
 
@@ -36,7 +36,7 @@ public class Polygon {
 
     /* добавление сторон */
     public void addLines(Collection<Line> lines) {
-        this.lines = CopyOnWriteUtils.addToList(this.lines, lines.stream().toList());
+        this.lines = Utils.addToList(this.lines, lines.stream().toList());
         List<Vertex> vertexesToAdd = new ArrayList<>();
         for (Line line : lines) {
             if (!vertexesToAdd.contains(line.getStart())) {
@@ -51,12 +51,12 @@ public class Polygon {
 
     /* добавление треугольника */
     public void addTriangle(Triangle triangle) {
-        this.triangles = CopyOnWriteUtils.addToList(this.triangles, List.of(triangle));
+        this.triangles = Utils.addToList(this.triangles, List.of(triangle));
     }
 
     /* добавление камеры */
     public void addCamera(Vertex camera) {
-        this.cameras = CopyOnWriteUtils.addToList(this.cameras, List.of(camera));
+        this.cameras = Utils.addToList(this.cameras, List.of(camera));
     }
 
     /* проверка принадлежности переданной вершины внутреннему пространству многоугольника */

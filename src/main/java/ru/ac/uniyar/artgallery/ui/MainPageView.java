@@ -110,11 +110,7 @@ public class MainPageView extends VerticalLayout {
         next.addClickListener(it -> init());
 
         Button autoSolve = new Button("Решить уровень");
-        autoSolve.addClickListener(it -> {
-            List<Vertex> cameras = AutoSolving.invoke(polygon);
-            drawCameras(canvas.getContext(), cameras, "#FFD500");
-            autoSolved.set(true);
-        });
+        autoSolve.addClickListener(it -> autoSolve(autoSolved));
         autoSolve.getStyle().set("margin-right", "20px");
 
         Div buttons = new Div();
@@ -149,6 +145,12 @@ public class MainPageView extends VerticalLayout {
         }
 
         return polygon.isFullyCovered() && !ended;
+    }
+
+    public void autoSolve(AtomicBoolean autoSolved) {
+        List<Vertex> cameras = AutoSolving.invoke(polygon);
+        drawCameras(canvas.getContext(), cameras, "#FFD500");
+        autoSolved.set(true);
     }
 
     /* визуализация многоугольника */

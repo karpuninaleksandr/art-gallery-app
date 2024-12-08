@@ -3,6 +3,7 @@ package ru.ac.uniyar.artgallery.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import ru.ac.uniyar.artgallery.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,7 +102,7 @@ public class Line {
     }
 
     public boolean isDrawable(List<Line> lines, Predicate<Line> condition) {
-        return lines.stream().noneMatch(condition);
+        return Utils.filter(lines, condition).isEmpty();
     }
 
     public Line extend(int x) {

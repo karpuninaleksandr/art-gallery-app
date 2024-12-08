@@ -1,6 +1,6 @@
 package ru.ac.uniyar.artgallery.processing;
 
-import ru.ac.uniyar.artgallery.CopyOnWriteUtils;
+import ru.ac.uniyar.artgallery.Utils;
 import ru.ac.uniyar.artgallery.model.Line;
 import ru.ac.uniyar.artgallery.model.Polygon;
 import ru.ac.uniyar.artgallery.model.Triangle;
@@ -112,7 +112,7 @@ public class PolygonGeneration {
         List<Line> sortedSegments = new ArrayList<>(List.of(segments.get(0)));
         for (Line line : segments) {
             if (line.getStart().isEqualTo(sortedSegments.get(sortedSegments.size() - 1).getEnd())) {
-                sortedSegments = CopyOnWriteUtils.addToList(sortedSegments, List.of(line));
+                sortedSegments = Utils.addToList(sortedSegments, List.of(line));
             }
         }
     }

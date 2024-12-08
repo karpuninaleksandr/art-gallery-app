@@ -1,6 +1,6 @@
 package ru.ac.uniyar.artgallery.processing;
 
-import ru.ac.uniyar.artgallery.CopyOnWriteUtils;
+import ru.ac.uniyar.artgallery.Utils;
 import ru.ac.uniyar.artgallery.model.Line;
 import ru.ac.uniyar.artgallery.model.Polygon;
 import ru.ac.uniyar.artgallery.model.Vertex;
@@ -25,7 +25,7 @@ public class CameraAdding {
             Line lineToDraw = new Line(vertex, camera);
             if (lineToDraw.canBeDrawn(polygon.getLines())) {
                 if (!vertexesToDrawLinesTo.contains(vertex)) {
-                    vertexesToDrawLinesTo = CopyOnWriteUtils.addToList(vertexesToDrawLinesTo, List.of(vertex));
+                    vertexesToDrawLinesTo = Utils.addToList(vertexesToDrawLinesTo, List.of(vertex));
                     addIfVertexIsPartOfVisibilityField(1000, camera, polygon, vertexesToDrawLinesTo, lineToDraw, vertex);
                     addIfVertexIsPartOfVisibilityField(0, camera, polygon, vertexesToDrawLinesTo, lineToDraw, vertex);
                 }
@@ -73,7 +73,7 @@ public class CameraAdding {
                     vertexesOnTheLine.add(vertex);
                 }
             }
-            orderedVertexes.set(CopyOnWriteUtils.addToList(orderedVertexes.get(), vertexesOnTheLine.stream().sorted((v1, v2) ->
+            orderedVertexes.set(Utils.addToList(orderedVertexes.get(), vertexesOnTheLine.stream().sorted((v1, v2) ->
                     (int) (v1.getDistanceToVertex(it.getStart()) - v2.getDistanceToVertex(it.getStart()))).toList()));
         });
         return orderedVertexes.get();

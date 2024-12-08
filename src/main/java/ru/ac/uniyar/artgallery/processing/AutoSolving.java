@@ -1,6 +1,6 @@
 package ru.ac.uniyar.artgallery.processing;
 
-import ru.ac.uniyar.artgallery.CopyOnWriteUtils;
+import ru.ac.uniyar.artgallery.Utils;
 import ru.ac.uniyar.artgallery.model.Polygon;
 import ru.ac.uniyar.artgallery.model.Triangle;
 import ru.ac.uniyar.artgallery.model.Vertex;
@@ -22,17 +22,17 @@ public class AutoSolving {
         int index = 0;
 
         Triangle check = trianglesToCheck.get(0);
-        done = CopyOnWriteUtils.addToList(done, List.of(check));
-        reds = CopyOnWriteUtils.addToList(reds, List.of(check.getVertex2()));
-        greens = CopyOnWriteUtils.addToList(greens, List.of(check.getVertex1()));
-        blues = CopyOnWriteUtils.addToList(blues, List.of(check.getVertex3()));
+        done = Utils.addToList(done, List.of(check));
+        reds = Utils.addToList(reds, List.of(check.getVertex2()));
+        greens = Utils.addToList(greens, List.of(check.getVertex1()));
+        blues = Utils.addToList(blues, List.of(check.getVertex3()));
 
         check = getNextTriangleToCheck(check, trianglesToCheck, done);
         if (check == null) return reds;
 
         while (done.size() < trianglesToCheck.size()) {
             if (!done.contains(check))
-                done = CopyOnWriteUtils.addToList(done, List.of(check));
+                done = Utils.addToList(done, List.of(check));
             if (!paintTriangle(reds, greens, blues, check.getVertex1(), check.getVertex2(), check.getVertex3())) {
                 int curr = done.indexOf(check);
                 check = getNextTriangleToCheck(check, trianglesToCheck, done);
@@ -64,8 +64,8 @@ public class AutoSolving {
     /* раскрашивание треугольника */
     public static boolean paintTriangle(List<Vertex> reds, List<Vertex> greens, List<Vertex> blues, Vertex v1, Vertex v2, Vertex v3) {
         List<Vertex> allColoredVertexes = new ArrayList<>(reds);
-        allColoredVertexes = CopyOnWriteUtils.addToList(allColoredVertexes, greens);
-        allColoredVertexes = CopyOnWriteUtils.addToList(allColoredVertexes, blues);
+        allColoredVertexes = Utils.addToList(allColoredVertexes, greens);
+        allColoredVertexes = Utils.addToList(allColoredVertexes, blues);
         boolean v1isColored = allColoredVertexes.contains(v1);
         boolean v2isColored = allColoredVertexes.contains(v2);
         boolean v3isColored = allColoredVertexes.contains(v3);
