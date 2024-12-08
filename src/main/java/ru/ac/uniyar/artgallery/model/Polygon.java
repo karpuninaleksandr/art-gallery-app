@@ -35,18 +35,11 @@ public class Polygon {
     }
 
     /* добавление сторон */
-    public void addLines(Collection<Line> lines) {
+    public void addLines(List<Line> lines) {
         this.lines = Utils.addToList(this.lines, lines.stream().toList());
-        List<Vertex> vertexesToAdd = new ArrayList<>();
-        for (Line line : lines) {
-            if (!vertexesToAdd.contains(line.getStart())) {
-                vertexesToAdd.add(line.getStart());
-            }
-            if (!vertexesToAdd.contains(line.getEnd())) {
-                vertexesToAdd.add(line.getEnd());
-            }
-        }
-        this.addVertexes(vertexesToAdd);
+        List<Vertex> check = Utils.map(lines, Line::getStart);
+        check = Utils.addToList(check, Utils.map(lines, Line::getEnd));
+        this.addVertexes(check.stream().distinct().toList());
     }
 
     /* добавление треугольника */
@@ -61,27 +54,18 @@ public class Polygon {
 
     /* проверка принадлежности переданной вершины внутреннему пространству многоугольника */
     public boolean checkIfPointIsInside(Vertex checkVertex) {
-        for (Triangle triangle : triangles)
-            if (triangle.checkIfVertexIsInside(checkVertex))
-                return true;
-        return false;
+        return !Utils.filter(triangles, it -> it.checkIfVertexIsInside(checkVertex)).isEmpty();
     }
 
     /* проверка принадлежности переданной стороны внутреннему пространству многоугольника */
     public boolean checkIfLineIsInsideExceptVertex(Line line, Vertex except) {
-        for (Vertex vertex : line.getAsListOfDots()) {
-            if (vertex.isNotEqualTo(except) && !checkIfPointIsInside(vertex) && checkIfBordersDoNotContainVertex(vertex))
-                return false;
-        }
-        return true;
+        return Utils.filter(line.getAsListOfDots(), it -> it.isNotEqualTo(except) && !checkIfPointIsInside(it) &&
+                checkIfBordersDoNotContainVertex(it)).isEmpty();
     }
 
     /* проверка непринадлежности переданной вершины сторонам многоугольника */
     public boolean checkIfBordersDoNotContainVertex(Vertex vertex) {
-        for (Line line : lines) {
-            if (line.checkIfContainsVertex(vertex)) return false;
-        }
-        return true;
+        return Utils.filter(lines, it -> it.checkIfContainsVertex(vertex)).isEmpty();
     }
 
     /* проверка полного покрытия многоугольника */

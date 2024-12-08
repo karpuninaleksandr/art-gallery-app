@@ -36,8 +36,8 @@ public class Utils {
         return result;
     }
 
-    public static <T> List<T> map(List<T> list, Function<T, T> function) {
-        List<T> result = new ArrayList<>();
+    public static <T, R> List<R> map(List<T> list, Function<T, R> function) {
+        List<R> result = new ArrayList<>();
         list.forEach(it -> {
             result.add(function.apply(it));
         });
