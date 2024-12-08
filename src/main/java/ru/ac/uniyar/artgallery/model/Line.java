@@ -1,6 +1,5 @@
 package ru.ac.uniyar.artgallery.model;
 
-import fj.F;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,12 +16,6 @@ public class Line {
     private Vertex end;
 
     private final double eps = 0.005;
-
-    /* проверка пересечения линий */
-    public boolean crosses(Line line) {
-        Vertex crossVertex = getLinesCrossVertex(line);
-        return crossVertex != null && start.isNotEqualTo(crossVertex) && end.isNotEqualTo(crossVertex);
-    }
 
     /* проверка пересечения линий кроме переданной вершины */
     public boolean crossesExceptVertex(Line line, Vertex vertex) {
@@ -92,22 +85,23 @@ public class Line {
         return Math.sqrt(Math.pow(start.getX() - end.getX(), 2) + Math.pow((start.getY() - end.getY()), 2));
     }
 
-    /* проверка отсутствия пересечения линий */
     public boolean canBeDrawn(List<Line> lines) {
-        for (Line line : lines) {
-            if (this.crosses(line))
-                return false;
-        }
-        return true;
+        return isDrawable(lines, line -> {
+            Vertex crossVertex = getLinesCrossVertex(line);
+            return crossVertex != null && start.isNotEqualTo(crossVertex) && end.isNotEqualTo(crossVertex);
+        });
     }
 
     /* проверка отсутствия пересечения линий кроме переданной вершины */
     public boolean canBeDrawnExceptVertex(List<Line> lines, Vertex vertex) {
-        for (Line line : lines) {
-            if (this.crossesExceptVertex(line, vertex))
-                return false;
-        }
-        return true;
+        return isDrawable(lines, line -> {
+            Vertex crossVertex = getLinesCrossVertex(line);
+            return crossVertex != null && start.isNotEqualTo(crossVertex) && end.isNotEqualTo(crossVertex) && vertex.isNotEqualTo(crossVertex);
+        });
+    }
+
+    public boolean isDrawable(List<Line> lines, Predicate<Line> condition) {
+        return lines.stream().noneMatch(condition);
     }
 
     public Line extend(int x) {
