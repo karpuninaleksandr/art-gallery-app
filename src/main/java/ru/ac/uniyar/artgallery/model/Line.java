@@ -1,12 +1,13 @@
 package ru.ac.uniyar.artgallery.model;
 
+import fj.F;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 @Getter
 @AllArgsConstructor
@@ -101,8 +102,8 @@ public class Line {
     }
 
     /* проверка отсутствия пересечения линий кроме переданной вершины */
-    public boolean canBeDrawnExceptVertex(Polygon polygon, Vertex vertex) {
-        for (Line line : polygon.getLines()) {
+    public boolean canBeDrawnExceptVertex(List<Line> lines, Vertex vertex) {
+        for (Line line : lines) {
             if (this.crossesExceptVertex(line, vertex))
                 return false;
         }

@@ -40,7 +40,7 @@ public class CameraAdding {
     public static void addIfVertexIsPartOfVisibilityField(int parameter, Vertex camera, Polygon polygon, List<Vertex> field, Line line, Vertex vertex) {
         Vertex extendedVertex = getCrossingVertexOfExtendedLine(line.extend(parameter), vertex, polygon);
 
-        if (extendedVertex != null && new Line(camera, extendedVertex).canBeDrawnExceptVertex(polygon, vertex)
+        if (extendedVertex != null && new Line(camera, extendedVertex).canBeDrawnExceptVertex(polygon.getLines(), vertex)
                 && polygon.checkIfLineIsInsideExceptVertex(new Line(camera, extendedVertex), vertex) && !field.contains(extendedVertex)) {
             field.add(extendedVertex);
         }

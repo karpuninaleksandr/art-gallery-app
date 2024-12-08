@@ -97,7 +97,7 @@ public class Polygon {
             for (Vertex currentCheck : vertexesToCheck) {
                 boolean isInside = false;
                 for (Vertex camera : this.cameras) {
-                    if (new Line(currentCheck, camera).canBeDrawnExceptVertex(this, currentCheck)) {
+                    if (new Line(currentCheck, camera).canBeDrawnExceptVertex(this.getLines(), currentCheck)) {
                         isInside = true;
                     }
                 }
