@@ -86,16 +86,8 @@ public class MainPageView extends VerticalLayout {
 
         canvas.addMouseClickListener(it -> {
             System.out.println(it.getOffsetX() + " " + it.getOffsetY());
-            Polygon camVisibilityField = CameraAdding.getCamVisibilityField(new Vertex((double) it.getOffsetX(), (double) it.getOffsetY()), polygon);
-            if (camVisibilityField != null) {
-                camVisibilityFields.add(camVisibilityField);
-                Triangulation.invoke(camVisibilityField);
-                drawCamVisibilityField(canvas.getContext(), camVisibilityField,
-                        getCamVisibilityColor(polygon.getCameras().size() - 1));
-                drawCameras(canvas.getContext(), polygon.getCameras(), "black");
-            }
-
-            if (polygon.isFullyCovered() && !ended.get()) {
+            boolean end = addCam(ended.get(), it.getOffsetX(), it.getOffsetY());
+            if (end) {
                 ended.set(true);
                 levelEnded.setText("Уровень пройден!");
                 int auto = AutoSolving.invoke(polygon).size();
@@ -144,6 +136,19 @@ public class MainPageView extends VerticalLayout {
 
         createPolygon();
         drawPolygon(canvas.getContext());
+    }
+
+    public boolean addCam(boolean ended, double x, double y) {
+        Polygon camVisibilityField = CameraAdding.getCamVisibilityField(new Vertex(x, y), polygon);
+        if (camVisibilityField != null) {
+            camVisibilityFields.add(camVisibilityField);
+            Triangulation.invoke(camVisibilityField);
+            drawCamVisibilityField(canvas.getContext(), camVisibilityField,
+                    getCamVisibilityColor(polygon.getCameras().size() - 1));
+            drawCameras(canvas.getContext(), polygon.getCameras(), "black");
+        }
+
+        return polygon.isFullyCovered() && !ended;
     }
 
     /* визуализация многоугольника */

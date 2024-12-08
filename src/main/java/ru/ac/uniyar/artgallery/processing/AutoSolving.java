@@ -1,5 +1,6 @@
 package ru.ac.uniyar.artgallery.processing;
 
+import ru.ac.uniyar.artgallery.CopyOnWriteUtils;
 import ru.ac.uniyar.artgallery.model.Polygon;
 import ru.ac.uniyar.artgallery.model.Triangle;
 import ru.ac.uniyar.artgallery.model.Vertex;
@@ -12,25 +13,26 @@ public class AutoSolving {
     /* основной метод вызова */
     public static List<Vertex> invoke(Polygon polygon) {
 
-        ArrayList<Vertex> reds = new ArrayList<>();
-        ArrayList<Vertex> greens = new ArrayList<>();
-        ArrayList<Vertex> blues = new ArrayList<>();
+        List<Vertex> reds = new ArrayList<>();
+        List<Vertex> greens = new ArrayList<>();
+        List<Vertex> blues = new ArrayList<>();
 
-        ArrayList<Triangle> done = new ArrayList<>();
-        ArrayList<Triangle> trianglesToCheck = new ArrayList<>(polygon.getTriangles());
+        List<Triangle> done = new ArrayList<>();
+        List<Triangle> trianglesToCheck = new ArrayList<>(polygon.getTriangles());
         int index = 0;
 
         Triangle check = trianglesToCheck.get(0);
-        done.add(check);
-        reds.add(check.getVertex2());
-        greens.add(check.getVertex1());
-        blues.add(check.getVertex3());
+        done = CopyOnWriteUtils.addToList(done, List.of(check));
+        reds = CopyOnWriteUtils.addToList(reds, List.of(check.getVertex2()));
+        greens = CopyOnWriteUtils.addToList(greens, List.of(check.getVertex1()));
+        blues = CopyOnWriteUtils.addToList(blues, List.of(check.getVertex3()));
 
         check = getNextTriangleToCheck(check, trianglesToCheck, done);
         if (check == null) return reds;
 
         while (done.size() < trianglesToCheck.size()) {
-            if (!done.contains(check)) done.add(check);
+            if (!done.contains(check))
+                done = CopyOnWriteUtils.addToList(done, List.of(check));
             if (!paintTriangle(reds, greens, blues, check.getVertex1(), check.getVertex2(), check.getVertex3())) {
                 int curr = done.indexOf(check);
                 check = getNextTriangleToCheck(check, trianglesToCheck, done);
@@ -62,8 +64,8 @@ public class AutoSolving {
     /* раскрашивание треугольника */
     public static boolean paintTriangle(List<Vertex> reds, List<Vertex> greens, List<Vertex> blues, Vertex v1, Vertex v2, Vertex v3) {
         List<Vertex> allColoredVertexes = new ArrayList<>(reds);
-        allColoredVertexes.addAll(greens);
-        allColoredVertexes.addAll(blues);
+        allColoredVertexes = CopyOnWriteUtils.addToList(allColoredVertexes, greens);
+        allColoredVertexes = CopyOnWriteUtils.addToList(allColoredVertexes, blues);
         boolean v1isColored = allColoredVertexes.contains(v1);
         boolean v2isColored = allColoredVertexes.contains(v2);
         boolean v3isColored = allColoredVertexes.contains(v3);
@@ -264,9 +266,8 @@ public class AutoSolving {
     }
 
     /* получение следующего к рассмотрению треугольника */
-    public static Triangle getNextTriangleToCheck(Triangle last, ArrayList<Triangle> allTriangles,
-                                           ArrayList<Triangle> doneTriangles) {
-
+    public static Triangle getNextTriangleToCheck(Triangle last, List<Triangle> allTriangles,
+                                           List<Triangle> doneTriangles) {
         for (Triangle triangle : allTriangles) {
             if (last != triangle && triangle.isNextTo(last) && !doneTriangles.contains(triangle))
                 return triangle;

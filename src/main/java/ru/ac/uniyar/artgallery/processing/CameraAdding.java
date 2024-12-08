@@ -1,10 +1,12 @@
 package ru.ac.uniyar.artgallery.processing;
 
+import ru.ac.uniyar.artgallery.CopyOnWriteUtils;
 import ru.ac.uniyar.artgallery.model.Line;
 import ru.ac.uniyar.artgallery.model.Polygon;
 import ru.ac.uniyar.artgallery.model.Vertex;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class CameraAdding {
 
@@ -18,12 +20,12 @@ public class CameraAdding {
 
     /* создание области видимости камеры */
     public static Polygon createCamVisibilityField(Vertex camera, Polygon polygon) {
-        ArrayList<Vertex> vertexesToDrawLinesTo = new ArrayList<>();
+        List<Vertex> vertexesToDrawLinesTo = new ArrayList<>();
         for (Vertex vertex : polygon.getVertexes()) {
             Line lineToDraw = new Line(vertex, camera);
             if (lineToDraw.canBeDrawn(polygon.getLines())) {
                 if (!vertexesToDrawLinesTo.contains(vertex)) {
-                    vertexesToDrawLinesTo.add(vertex);
+                    vertexesToDrawLinesTo = CopyOnWriteUtils.addToList(vertexesToDrawLinesTo, List.of(vertex));
                     addIfVertexIsPartOfVisibilityField(1000, camera, polygon, vertexesToDrawLinesTo, lineToDraw, vertex);
                     addIfVertexIsPartOfVisibilityField(0, camera, polygon, vertexesToDrawLinesTo, lineToDraw, vertex);
                 }
@@ -59,21 +61,21 @@ public class CameraAdding {
     }
 
     /* упорядочивание вершин */
-    public static List<Vertex> getOrderedVertexes(ArrayList<Vertex> vertexesWithNoOrder, List<Line> lines) {
-        ArrayList<Vertex> orderedVertexes = new ArrayList<>();
+    public static List<Vertex> getOrderedVertexes(List<Vertex> vertexesWithNoOrder, List<Line> lines) {
+        AtomicReference<List<Vertex>> orderedVertexes = new AtomicReference<>(new ArrayList<>());
         lines.forEach(it -> {
             ArrayList<Vertex> vertexesOnTheLine = new ArrayList<>();
             for (Vertex vertex : vertexesWithNoOrder) {
-                if (orderedVertexes.contains(vertex)) {
+                if (orderedVertexes.get().contains(vertex)) {
                     continue;
                 }
                 if (it.checkIfContainsVertex(vertex)) {
                     vertexesOnTheLine.add(vertex);
                 }
             }
-            orderedVertexes.addAll(vertexesOnTheLine.stream().sorted((v1, v2) ->
-                    (int)(v1.getDistanceToVertex(it.getStart()) - v2.getDistanceToVertex(it.getStart()))).toList());
+            orderedVertexes.set(CopyOnWriteUtils.addToList(orderedVertexes.get(), vertexesOnTheLine.stream().sorted((v1, v2) ->
+                    (int) (v1.getDistanceToVertex(it.getStart()) - v2.getDistanceToVertex(it.getStart()))).toList()));
         });
-        return orderedVertexes;
+        return orderedVertexes.get();
     }
 }
